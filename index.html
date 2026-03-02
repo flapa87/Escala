@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SATA Security - Escala de Trabalho</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Nova paleta sofisticada */
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1f2937;
+            --bg-card: #1a2332;
+            --bg-hover: #243447;
+            
+            --border-subtle: rgba(148, 163, 184, 0.1);
+            --border-default: rgba(148, 163, 184, 0.2);
+            --border-strong: rgba(148, 163, 184, 0.3);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --text-disabled: #64748b;
+            
+            /* Cores SATA refinadas */
+            --sata-blue: #0066cc;
+            --sata-blue-light: #3b82f6;
+            --sata-blue-dark: #004d99;
+            --sata-green: #c8db00;
+            --sata-green-light: #d4e600;
+            
+            /* Categorias de células */
+            --work-primary: #3b82f6;
+            --work-bg: rgba(59, 130, 246, 0.15);
+            --work-glow: rgba(59, 130, 246, 0.4);
+            
+            --off-primary: #64748b;
+            --off-bg: rgba(100, 116, 139, 0.12);
+            
+            --vacation-primary: #f59e0b;
+            --vacation-bg: rgba(245, 158, 11, 0.15);
+            --vacation-glow: rgba(245, 158, 11, 0.4);
+            
+            --weekend-bg: rgba(148, 163, 184, 0.08);
+            
+            /* Sombras */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+            --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
+            --shadow-glow-green: 0 0 20px rgba(200, 219, 0, 0.3);
+            
+            /* Transições */
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 102, 204, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(200, 219, 0, 0.05) 0%, transparent 50%);
+            color: var(--text-primary);
+            padding: 24px;
+            font-size: 13px;
+            min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Header Premium */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 20px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            flex-wrap: wrap;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--sata-blue), var(--sata-green), var(--sata-blue));
+            opacity: 0.8;
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .company-logo {
+            height: 70px;
+            width: auto;
+            max-width: 280px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+            transition: transform var(--transition-base);
+        }
+
+        .company-logo:hover {
+            transform: scale(1.02);
+        }
+
+        .company-subtitle {
+            font-size: 0.75rem;
+            color: var(--sata-green);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Controles de Mês Estilizados */
+        .month-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-secondary);
+            padding: 8px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-default);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .month-controls select, .month-controls input {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-default);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+        }
+
+        .month-controls select:hover, .month-controls input:hover {
+            border-color: var(--sata-blue-light);
+        }
+
+        .month-controls select:focus, .month-controls input:focus {
+            outline: none;
+            border-color: var(--sata-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .month-controls button {
+            background: linear-gradient(135deg, var(--sata-blue), var(--sata-blue-dark));
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .month-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow-blue);
+            filter: brightness(1.1);
+        }
+
+        .month-controls button:active {
+            transform: translateY(0);
+        }
+
+        /* Botões Premium */
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-default);
+            color: var(--text-secondary);
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-strong);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--sata-blue), var(--sata-blue-dark));
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 102, 204, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: var(--shadow-glow-blue);
+            filter: brightness(1.1);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            filter: grayscale(0.5);
+        }
+
+        /* Toolbar Aprimorada */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-default);
+            box-shadow: var(--shadow-sm);
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .legend-bar {
+            display: flex;
+            gap: 20px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            transition: all var(--transition-fast);
+        }
+
+        .legend-item:hover {
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .day-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .undo-info {
+            font-size: 0.8rem;
+            color: var(--sata-green);
+            margin-left: 12px;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity var(--transition-base);
+        }
+
+        .undo-info.visible {
+            opacity: 1;
+        }
+
+        /* Cards de Estatísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            max-width: 500px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--sata-blue), var(--sata-green));
+            opacity: 0.8;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-strong);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        /* Tabela Premium */
+        .table-wrapper {
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: 16px;
+            overflow-x: auto;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+        }
+
+        .table-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--sata-blue), var(--sata-green), transparent);
+            opacity: 0.5;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: fixed;
+            min-width: 900px;
+        }
+
+        thead th {
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 14px 6px;
+            text-align: center;
+            border-bottom: 2px solid var(--border-strong);
+            font-size: 11px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all var(--transition-fast);
+        }
+
+        th.name-col { 
+            width: 160px; 
+            text-align: left; 
+            padding-left: 16px; 
+            min-width: 160px;
+        }
+        th.turno-col { width: 50px; min-width: 50px; }
+        th.dia-col { 
+            width: 36px; 
+            min-width: 36px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        th.dia-col:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        th.total-col { width: 55px; min-width: 55px; }
+        th.actions-col { width: 90px; min-width: 90px; }
+
+        tbody tr {
+            transition: all var(--transition-fast);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-hover);
+        }
+
+        tbody td {
+            padding: 10px 4px;
+            text-align: center;
+            border-right: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 12px;
+            height: 44px;
+            transition: all var(--transition-fast);
+        }
+
+        tbody td.name-cell {
+            text-align: left;
+            padding-left: 16px;
+            font-size: 12px;
+            border-right: 2px solid var(--border-strong);
+            font-weight: 600;
+        }
+
+        tbody td.name-cell input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all var(--transition-fast);
+        }
+
+        tbody td.name-cell input:focus {
+            outline: none;
+            background: var(--bg-tertiary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        tbody td.turno-cell {
+            font-weight: 800;
+            font-size: 13px;
+            border-right: 2px solid var(--border-strong);
+        }
+
+        tbody td.total-cell {
+            font-weight: 800;
+            color: var(--sata-blue-light);
+            border-right: 2px solid var(--border-strong);
+            font-size: 13px;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .editable-cell {
+            cursor: text;
+            transition: all var(--transition-fast);
+            border-radius: 6px;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .editable-cell:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+            z-index: 5;
+            box-shadow: var(--shadow-md);
+        }
+
+        .editable-cell:focus {
+            outline: none;
+            background: var(--bg-tertiary);
+            box-shadow: 0 0 0 2px var(--sata-blue-light), var(--shadow-glow-blue);
+            transform: scale(1.15);
+            z-index: 10;
+        }
+
+        .turno-select {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: inherit;
+            font-weight: 800;
+            font-size: 13px;
+            text-align: center;
+            cursor: pointer;
+            font-family: inherit;
+            padding: 4px;
+            border-radius: 6px;
+            transition: all var(--transition-fast);
+        }
+
+        .turno-select:focus {
+            outline: none;
+            background: var(--bg-tertiary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        .turno-select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* Cores dos turnos com glow */
+        .t-A { color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.3); }
+        .t-B { color: #60a5fa; text-shadow: 0 0 10px rgba(96, 165, 250, 0.3); }
+        .t-C { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
+        .t-D { color: #f472b6; text-shadow: 0 0 10px rgba(244, 114, 182, 0.3); }
+        .t-E { color: #a78bfa; text-shadow: 0 0 10px rgba(167, 139, 250, 0.3); }
+        .t-F { color: #f87171; text-shadow: 0 0 10px rgba(248, 113, 113, 0.3); }
+        .t-G { color: #22d3ee; text-shadow: 0 0 10px rgba(34, 211, 238, 0.3); }
+
+        .day-cell { 
+            font-size: 12px; 
+            font-weight: 700;
+        }
+        
+        .d-work { 
+            background: var(--work-bg); 
+            color: #60a5fa;
+            text-shadow: 0 0 8px var(--work-glow);
+            box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.2);
+        }
+        .d-off { 
+            background: var(--off-bg); 
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .d-weekend { 
+            background: var(--weekend-bg); 
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        .d-vacation { 
+            background: var(--vacation-bg); 
+            color: #fbbf24;
+            text-shadow: 0 0 8px var(--vacation-glow);
+            box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.2);
+        }
+
+        .weekend-header {
+            background: var(--weekend-bg) !important;
+            color: var(--text-secondary) !important;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            border-radius: 8px;
+        }
+
+        /* Modal Premium */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity var(--transition-base);
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-default);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 102, 204, 0.2);
+            transform: scale(0.95) translateY(10px);
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--sata-blue), var(--sata-green));
+        }
+
+        .modal h3 {
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+            color: var(--text-primary);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--sata-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            background: var(--bg-tertiary);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .error-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+            outline: 2px solid var(--danger) !important;
+            background: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        /* Animações de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header, .stat-card, .toolbar, .table-wrapper {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .toolbar { animation-delay: 0.2s; }
+        .table-wrapper { animation-delay: 0.3s; }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            body { padding: 16px; }
+            .header { padding: 16px; }
+            .company-logo { height: 50px; }
+            .month-controls { order: 3; width: 100%; justify-content: center; }
+            .controls { width: 100%; justify-content: center; }
+        }
+
+        @media print {
+            body { 
+                background: white !important; 
+                color: black !important;
+                padding: 10px;
+            }
+            .table-wrapper { 
+                border: 1px solid #ddd !important; 
+                box-shadow: none !important;
+            }
+            thead th { 
+                background: #f8fafc !important; 
+                color: #374151 !important;
+                border-bottom: 2px solid #e5e7eb !important;
+            }
+            tbody td { 
+                border-color: #e5e7eb !important;
+                color: #111827 !important;
+            }
+            .btn, .toolbar, .month-controls button, .logo-container { display: none !important; }
+            .editable-cell { outline: none !important; box-shadow: none !important; }
+            .title-section { flex-direction: column; align-items: flex-start; }
+            .d-work { background: #dbeafe !important; color: #1e40af !important; }
+            .d-off { background: #f1f5f9 !important; color: #64748b !important; }
+            .d-vacation { background: #fef3c7 !important; color: #92400e !important; }
+            .t-A { color: #059669 !important; }
+            .t-B { color: #2563eb !important; }
+            .t-C { color: #d97706 !important; }
+            .t-D { color: #db2777 !important; }
+            .t-E { color: #7c3aed !important; }
+            .t-F { color: #dc2626 !important; }
+            .t-G { color: #0891b2 !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title-section">
+            <div class="logo-container">
+                <img src="sata.png" alt="SATA Security Logo" class="company-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div style="display: none; flex-direction: column; align-items: center; color: var(--sata-blue); font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;">
+                    <span>Security</span>
+                    <span style="color: var(--sata-green); font-size: 1.1rem; letter-spacing: 4px; font-weight: 700;">SATA</span>
+                </div>
+                <span class="company-subtitle">Escala de Trabalho</span>
+            </div>
+        </div>
+        
+        <div class="month-controls">
+            <button onclick="changeMonth(-1)">◀</button>
+            <select id="monthSelect" onchange="updateMonth()">
+                <option value="0">Janeiro</option>
+                <option value="1">Fevereiro</option>
+                <option value="2" selected>Março</option>
+                <option value="3">Abril</option>
+                <option value="4">Maio</option>
+                <option value="5">Junho</option>
+                <option value="6">Julho</option>
+                <option value="7">Agosto</option>
+                <option value="8">Setembro</option>
+                <option value="9">Outubro</option>
+                <option value="10">Novembro</option>
+                <option value="11">Dezembro</option>
+            </select>
+            <input type="number" id="yearInput" value="2026" min="2020" max="2030" style="width: 80px;" onchange="updateMonth()">
+            <button onclick="changeMonth(1)">▶</button>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="addEmployee()">➕ Funcionário</button>
+            <button class="btn btn-warning" id="btnUndo" onclick="undoLastAction()" disabled>↩️ Desfazer</button>
+            <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
+            <button class="btn btn-success" onclick="exportData()">💾 Salvar</button>
+            <button class="btn btn-primary" onclick="gerarPDF()">📄 PDF</button>
+        </div>
+    </div>
+
+    <div class="stats-grid" id="statsContainer">
+        <div class="stat-card">
+            <div class="stat-label">Funcionários</div>
+            <div class="stat-value" id="statFunc">11</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Dias no Mês</div>
+            <div class="stat-value" id="statDiasMes">31</div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <div class="legend-bar">
+            <div class="legend-item"><div class="dot" style="background: var(--work-primary);"></div> Trabalho</div>
+            <div class="legend-item"><div class="dot" style="background: var(--off-primary);"></div> Folga (F)</div>
+            <div class="legend-item"><div class="dot" style="background: var(--vacation-primary);"></div> Férias (FE)</div>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <div class="day-controls">
+                <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Ajustar Dias:</span>
+                <button class="btn btn-small" onclick="adjustDays(-1)">➖ Remover</button>
+                <button class="btn btn-small btn-primary" onclick="adjustDays(1)">➕ Adicionar</button>
+            </div>
+            <span class="undo-info" id="undoInfo"></span>
+        </div>
+    </div>
+
+    <div class="table-wrapper">
+        <table id="tabelaEscala">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <div id="modalFunc" class="modal">
+        <div class="modal-content">
+            <h3>➕ Adicionar Funcionário</h3>
+            <div class="form-group">
+                <label>Nome completo</label>
+                <input type="text" id="newName" placeholder="Ex: João Silva">
+            </div>
+            <div class="form-group">
+                <label>Matrícula</label>
+                <input type="text" id="newMat" placeholder="Ex: 1234">
+            </div>
+            <div class="form-group">
+                <label>Turno</label>
+                <select id="newTurno">
+                    <option value="A">A (05:00-09:00)</option>
+                    <option value="B">B (06:00-10:00)</option>
+                    <option value="C">C (14:00-23:00)</option>
+                    <option value="D">D (08:00-12:00)</option>
+                    <option value="E">E (11:00-15:00)</option>
+                    <option value="F">F (20:00-00:00)</option>
+                    <option value="G">G (09:00-17:00)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Horário</label>
+                <input type="text" id="newHorario" placeholder="Ex: 08:00-12:00">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" onclick="closeModal()">Cancelar</button>
+                <button class="btn btn-primary" onclick="confirmAddEmployee()">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // [Todo o JavaScript permanece exatamente igual ao original fornecido]
+        let currentMonth = 2;
+        let currentYear = 2026;
+        let numDays = 31;
+        let previousNumDays = 31;
+        let actionHistory = [];
+        
+        const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+                           "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        
+        const turnoHorarios = {
+            'A': '05:00-09:00', 'B': '06:00-10:00', 'C': '14:00-23:00',
+            'D': '08:00-12:00', 'E': '11:00-15:00', 'F': '20:00-00:00', 'G': '09:00-17:00'
+        };
+
+        let funcionarios = [
+            { id: 1, nome: "Ana Daria F. Sarmento", mat: "8143", turno: "D", horario: "08-12", 
+              dias: ["F","F","8","8","8","5","F","F","F","8","8","F","8","F","6","F","8","8","F","8","8","6","F","8","8","F","8","F","F","F","17"] },
+            { id: 2, nome: "Brenda M. Oliveira", mat: "4215", turno: "C", horario: "14-23", 
+              dias: ["F","14","14","14","14","14","F","F","14","14","14","14","14","F","F","0","14","14","14","14","F","F","14","14","14","14","14","F","F","14","14"] },
+            { id: 3, nome: "Celoir A. Moraes", mat: "4094", turno: "E", horario: "11-15", 
+              dias: ["8","12","20","F","20","F","F","F","12","F","12","8","F","12","8","12","F","12","F","8","12","8","12","F","12","F","8","12","8","F","8"] },
+            { id: 4, nome: "Clenilton F. Carvalho", mat: "7382", turno: "A", horario: "05-09", 
+              dias: ["F","5","6","5","F","F","12","8","5","F","5","F","F","5","F","5","6","5","F","F","5","F","5","6","5","F","F","5","8","F","8"] },
+            { id: 5, nome: "Caio V. Sena", mat: "8141", turno: "F", horario: "20-00", 
+              dias: ["F","21","20","21","20","20","F","20","21","20","21","20","F","20","20","21","20","21","20","F","20","20","21","20","21","20","F","20","F","F","F"] },
+            { id: 6, nome: "Elizara Flores", mat: "4796", turno: "E", horario: "11-15", 
+              dias: ["F","12","F","12","F","8","12","8","12","F","12","F","8","12","8","12","F","12","8","8","12","F","12","F","12","8","8","12","F","8","F"] },
+            { id: 7, nome: "Jailson M. Moraes", mat: "5203", turno: "A", horario: "05-09", 
+              dias: ["F","5","6","5","F","F","5","F","5","6","5","F","8","5","F","5","6","5","F","F","5","F","5","6","5","F","F","5","F","8","F"] },
+            { id: 8, nome: "Mayara C. Jesus", mat: "7449", turno: "F", horario: "20-00", 
+              dias: ["20","F","F","12","8","20","20","F","21","20","21","20","20","F","20","21","20","21","20","20","F","F","21","20","21","20","20","F","21","F","F"] },
+            { id: 9, nome: "Rogerio P. Pinheiro", mat: "4267", turno: "D", horario: "08-12", 
+              dias: ["20","21","F","21","F","F","20","20","F","6","8","F","F","20","F","6","F","8","F","F","20","20","6","F","8","F","F","20","21","F","F"] },
+            { id: 10, nome: "Fernando S. Lapa", mat: "4092", turno: "B", horario: "06-10", 
+              dias: ["F","15","15","15","15","15","F","F","FE","FE","15","15","15","15","F","F","15","FE","15","15","15","F","F","15","15","15","15","15","F","F","15"] },
+            { id: 11, nome: "Fabricio J. Aguiar", mat: "4156", turno: "G", horario: "09-17", 
+              dias: ["F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9"] }
+        ];
+
+        function validarEntrada(valor) {
+            valor = valor.trim().toUpperCase();
+            
+            if (valor === '' || valor === '-') return 'F';
+            if (valor === 'FE') return 'FE';
+            if (valor === 'F') return 'F';
+            
+            const horarioRegex = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
+            if (horarioRegex.test(valor)) return valor;
+            
+            const num = parseInt(valor);
+            if (!isNaN(num) && num >= 0 && num <= 24) return num.toString();
+            
+            return null;
+        }
+
+        function saveState(actionType, data = null) {
+            const state = {
+                type: actionType,
+                funcionarios: JSON.parse(JSON.stringify(funcionarios)),
+                numDays: numDays,
+                timestamp: new Date().toLocaleTimeString(),
+                data: data
+            };
+            actionHistory.push(state);
+            if (actionHistory.length > 20) actionHistory.shift();
+            updateUndoButton();
+        }
+
+        function undoLastAction() {
+            if (actionHistory.length === 0) return;
+            
+            const lastState = actionHistory.pop();
+            funcionarios = JSON.parse(JSON.stringify(lastState.funcionarios));
+            numDays = lastState.numDays;
+            previousNumDays = numDays;
+            
+            document.getElementById('statDiasMes').textContent = numDays;
+            
+            renderTable();
+            updateStats();
+            updateUndoButton();
+            
+            const info = document.getElementById('undoInfo');
+            info.textContent = `✓ Desfeito: ${lastState.type}`;
+            info.classList.add('visible');
+            setTimeout(() => { info.classList.remove('visible'); }, 3000);
+        }
+
+        function updateUndoButton() {
+            const btn = document.getElementById('btnUndo');
+            btn.disabled = actionHistory.length === 0;
+        }
+
+        function getDaysInMonth(month, year) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+
+        function isWeekend(day, month, year) {
+            const date = new Date(year, month, day);
+            const dayOfWeek = date.getDay();
+            return dayOfWeek === 0 || dayOfWeek === 6;
+        }
+
+        function getDayName(day, month, year) {
+            const date = new Date(year, month, day);
+            const days = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+            return days[date.getDay()];
+        }
+
+        function updateMonth() {
+            currentMonth = parseInt(document.getElementById('monthSelect').value);
+            currentYear = parseInt(document.getElementById('yearInput').value);
+            const newNumDays = getDaysInMonth(currentMonth, currentYear);
+            
+            if (newNumDays !== numDays) {
+                saveState('changeMonth', { oldDays: numDays, newDays: newNumDays });
+                numDays = newNumDays;
+                previousNumDays = numDays;
+                
+                funcionarios.forEach(func => {
+                    if (func.dias.length < numDays) {
+                        while (func.dias.length < numDays) func.dias.push("F");
+                    } else if (func.dias.length > numDays) {
+                        func.dias = func.dias.slice(0, numDays);
+                    }
+                });
+            }
+            
+            renderTable();
+            updateStats();
+        }
+
+        function changeMonth(delta) {
+            let newMonth = currentMonth + delta;
+            let newYear = currentYear;
+            
+            if (newMonth > 11) { newMonth = 0; newYear++; }
+            else if (newMonth < 0) { newMonth = 11; newYear--; }
+            
+            document.getElementById('monthSelect').value = newMonth;
+            document.getElementById('yearInput').value = newYear;
+            updateMonth();
+        }
+
+        function adjustDays(delta) {
+            const newNumDays = numDays + delta;
+            if (newNumDays < 28 || newNumDays > 31) {
+                alert("O mês deve ter entre 28 e 31 dias!");
+                return;
+            }
+            
+            saveState('adjustDays', { delta, previousDays: numDays });
+            previousNumDays = numDays;
+            numDays = newNumDays;
+            
+            funcionarios.forEach(func => {
+                if (delta > 0) {
+                    for (let i = 0; i < delta; i++) func.dias.push("F");
+                } else {
+                    func.dias = func.dias.slice(0, numDays);
+                }
+            });
+            
+            renderTable();
+            updateStats();
+        }
+
+        function getCellClassAndValue(dia, isWeekendDay) {
+            let classe = 'day-cell editable-cell';
+            let valor = dia;
+            let isWork = false;
+            
+            const num = parseInt(dia);
+            const isNumber = !isNaN(num) && num >= 0 && num <= 24 && dia.toString().match(/^\d+$/);
+            const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(dia);
+            
+            if (dia === 'F' || dia === '0' || dia === '-' || dia === '') {
+                classe += ' d-off';
+                valor = 'F';
+            } else if (dia === 'FE') {
+                classe += ' d-vacation';
+            } else if (isNumber || isHorario) {
+                classe += ' d-work';
+                isWork = true;
+            } else {
+                classe += ' d-off';
+                valor = 'F';
+            }
+            
+            return { classe, valor, isWork };
+        }
+
+        function renderTable() {
+            const thead = document.getElementById('tableHead');
+            let headerHTML = `
+                <tr>
+                    <th class="name-col">Funcionário</th>
+                    <th class="turno-col">Turno</th>
+            `;
+            
+            for (let i = 1; i <= numDays; i++) {
+                const isWeekendDay = isWeekend(i, currentMonth, currentYear);
+                const dayName = getDayName(i, currentMonth, currentYear);
+                const weekendClass = isWeekendDay ? 'weekend-header' : '';
+                headerHTML += `<th class="dia-col ${weekendClass}" onclick="fillColumn(${i})">${i.toString().padStart(2, '0')}<br><small>${dayName}</small></th>`;
+            }
+            
+            headerHTML += `
+                    <th class="total-col">Total</th>
+                    <th class="actions-col">Ações</th>
+                </tr>
+            `;
+            thead.innerHTML = headerHTML;
+            
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = funcionarios.map((func, idx) => {
+                let total = 0;
+                const cells = func.dias.map((dia, dayIdx) => {
+                    const dayNum = dayIdx + 1;
+                    const isWeekendDay = isWeekend(dayNum, currentMonth, currentYear);
+                    
+                    const cellData = getCellClassAndValue(dia, isWeekendDay);
+                    
+                    const num = parseInt(dia);
+                    if (!isNaN(num) && num > 0 && num < 24) total++;
+                    
+                    return `<td class="${cellData.classe}" contenteditable="true" onblur="updateCell(${idx}, ${dayIdx}, this)" onkeydown="handleKey(event, ${idx}, ${dayIdx})">${cellData.valor}</td>`;
+                }).join('');
+                
+                const turnoOptions = Object.keys(turnoHorarios).map(t => 
+                    `<option value="${t}" ${func.turno === t ? 'selected' : ''}>${t}</option>`
+                ).join('');
+                
+                return `
+                    <tr>
+                        <td class="name-cell">
+                            <input type="text" value="${func.nome}" onchange="updateName(${idx}, this.value)" title="${func.mat} • ${func.horario}">
+                        </td>
+                        <td class="turno-cell t-${func.turno}">
+                            <select class="turno-select t-${func.turno}" onchange="updateTurno(${idx}, this.value)">
+                                ${turnoOptions}
+                            </select>
+                        </td>
+                        ${cells}
+                        <td class="total-cell">${total}d</td>
+                        <td>
+                            <button class="btn btn-small btn-danger" onclick="removeEmployee(${idx})">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            document.getElementById('statDiasMes').textContent = numDays;
+        }
+
+        function updateTurno(idx, newTurno) {
+            const oldTurno = funcionarios[idx].turno;
+            if (oldTurno !== newTurno) {
+                saveState('updateTurno', { idx, oldTurno });
+                funcionarios[idx].turno = newTurno;
+                funcionarios[idx].horario = turnoHorarios[newTurno];
+                renderTable();
+            }
+        }
+
+        function updateCell(funcIdx, dayIdx, element) {
+            const oldValue = funcionarios[funcIdx].dias[dayIdx];
+            const inputValue = element.innerText;
+            
+            const validatedValue = validarEntrada(inputValue);
+            
+            if (validatedValue === null) {
+                element.innerText = oldValue;
+                element.classList.add('error-shake');
+                setTimeout(() => {
+                    element.classList.remove('error-shake');
+                }, 500);
+                return;
+            }
+            
+            if (oldValue !== validatedValue) {
+                saveState('updateCell', { funcIdx, dayIdx, oldValue });
+                funcionarios[funcIdx].dias[dayIdx] = validatedValue;
+                renderTable();
+                updateStats();
+            } else {
+                element.innerText = validatedValue;
+            }
+        }
+
+        function updateName(idx, value) {
+            const oldName = funcionarios[idx].nome;
+            if (oldName !== value) {
+                saveState('updateName', { idx, oldName });
+                funcionarios[idx].nome = value;
+            }
+        }
+
+        function handleKey(event, funcIdx, dayIdx) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                event.target.blur();
+                const nextCell = document.querySelectorAll('tbody tr')[funcIdx].querySelectorAll('.editable-cell')[dayIdx + 1];
+                if (nextCell) nextCell.focus();
+            }
+        }
+
+        function fillColumn(day) {
+            const value = prompt(`Preencher dia ${day} para todos:\n• F = Folga\n• FE = Férias\n• Número (0-24) = Horas\n• HH:MM = Horário`, "8");
+            
+            if (value !== null) {
+                const validated = validarEntrada(value);
+                if (validated === null) {
+                    alert("Valor inválido! Use: F, FE, número (0-24) ou horário (HH:MM)");
+                    return;
+                }
+                
+                const oldValues = funcionarios.map(f => f.dias[day - 1]);
+                saveState('fillColumn', { day, oldValues });
+                
+                funcionarios.forEach(func => {
+                    if (day - 1 < func.dias.length) func.dias[day - 1] = validated;
+                });
+                
+                renderTable();
+                updateStats();
+            }
+        }
+
+        function addEmployee() {
+            document.getElementById('modalFunc').classList.add('active');
+            document.getElementById('newName').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('modalFunc').classList.remove('active');
+            document.getElementById('newName').value = '';
+            document.getElementById('newMat').value = '';
+            document.getElementById('newHorario').value = '';
+        }
+
+        function confirmAddEmployee() {
+            const nome = document.getElementById('newName').value;
+            const mat = document.getElementById('newMat').value;
+            const turno = document.getElementById('newTurno').value;
+            const horario = document.getElementById('newHorario').value || turnoHorarios[turno];
+            
+            if (!nome) { alert("Digite o nome do funcionário!"); return; }
+            
+            const newId = Math.max(...funcionarios.map(f => f.id), 0) + 1;
+            const newEmployee = {
+                id: newId, nome: nome, mat: mat || "0000", turno: turno, horario: horario,
+                dias: Array(numDays).fill("F")
+            };
+            
+            saveState('addEmployee');
+            funcionarios.push(newEmployee);
+            
+            closeModal();
+            renderTable();
+            updateStats();
+        }
+
+        function removeEmployee(idx) {
+            if (confirm(`Remover ${funcionarios[idx].nome}?`)) {
+                const deletedEmployee = JSON.parse(JSON.stringify(funcionarios[idx]));
+                saveState('removeEmployee', { idx, deletedEmployee });
+                
+                funcionarios.splice(idx, 1);
+                renderTable();
+                updateStats();
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('statFunc').textContent = funcionarios.length;
+            document.getElementById('statDiasMes').textContent = numDays;
+        }
+
+        function exportData() {
+            const data = { mes: currentMonth, ano: currentYear, dias: numDays, funcionarios: funcionarios };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.json`;
+            a.click();
+        }
+
+        window.addEventListener('dragover', e => e.preventDefault());
+        window.addEventListener('drop', e => {
+            e.preventDefault();
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.json')) {
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        saveState('loadFile');
+                        currentMonth = data.mes;
+                        currentYear = data.ano;
+                        numDays = data.dias;
+                        previousNumDays = numDays;
+                        funcionarios = data.funcionarios;
+                        document.getElementById('monthSelect').value = currentMonth;
+                        document.getElementById('yearInput').value = currentYear;
+                        renderTable();
+                        updateStats();
+                        alert("Dados carregados com sucesso!");
+                    } catch (err) { alert("Erro ao carregar arquivo!"); }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function gerarPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'mm', 'a4');
+            
+            const cores = {
+                bg: [11, 17, 32],
+                card: [21, 30, 50],
+                border: [30, 41, 59],
+                text: [226, 232, 240],
+                muted: [148, 163, 184],
+                work: [59, 130, 246],
+                workBg: [219, 234, 254],
+                workText: [37, 99, 235],
+                off: [100, 116, 139],
+                offBg: [241, 245, 249],
+                vacation: [245, 158, 11],
+                vacationBg: [254, 243, 199],
+                sataBlue: [0, 86, 179],
+                sataGreen: [196, 214, 0]
+            };
+            
+            doc.setFillColor(...cores.bg);
+            doc.rect(0, 0, 297, 210, 'F');
+            
+            doc.setFillColor(...cores.card);
+            doc.rect(10, 10, 277, 30, 'F');
+            
+            const logoBase64 = localStorage.getItem('sataLogoBase64');
+            
+            if (logoBase64) {
+                try {
+                    doc.addImage(logoBase64, 'PNG', 110, 12, 80, 20);
+                } catch(e) {
+                    drawFallbackLogo(doc, cores);
+                }
+            } else {
+                drawFallbackLogo(doc, cores);
+            }
+            
+            doc.setTextColor(...cores.text);
+            doc.setFontSize(12);
+            doc.text(`${monthNames[currentMonth].toUpperCase()} ${currentYear}`, 250, 24, { align: 'right' });
+            
+            doc.setFontSize(9);
+            doc.setTextColor(...cores.muted);
+            doc.text(`${funcionarios.length} funcionários • ${numDays} dias`, 250, 29, { align: 'right' });
+            
+            doc.setTextColor(...cores.sataGreen);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text('ESCALA DE TRABALHO', 148, 38, { align: 'center' });
+            
+            const headers = [['Funcionário', 'T']];
+            for (let i = 1; i <= numDays; i++) {
+                const dayName = getDayName(i, currentMonth, currentYear);
+                headers[0].push(`${i.toString().padStart(2, '0')}\n${dayName}`);
+            }
+            headers[0].push('Total');
+            
+            const body = funcionarios.map(func => {
+                const row = [func.nome, func.turno];
+                let total = 0;
+                
+                func.dias.forEach((dia, idx) => {
+                    const num = parseInt(dia);
+                    const isNumber = !isNaN(num) && num >= 0 && num <= 24 && dia.toString().match(/^\d+$/);
+                    const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(dia);
+                    
+                    let val = dia;
+                    
+                    if (dia === 'F' || dia === '0' || dia === '-' || dia === '') {
+                        val = 'F';
+                    } else if (dia === 'FE') {
+                        val = 'FE';
+                    } else if (isNumber || isHorario) {
+                        if (isNumber && num > 0 && num < 24) total++;
+                    }
+                    
+                    row.push(val);
+                });
+                
+                row.push(`${total}d`);
+                return row;
+            });
+            
+            const columnStyles = {
+                0: { cellWidth: 40, halign: 'left', fontStyle: 'bold' },
+                1: { cellWidth: 8, halign: 'center', fontStyle: 'bold' }
+            };
+            
+            const dayColWidth = Math.min(8, (277 - 60) / numDays);
+            for (let i = 2; i <= numDays + 1; i++) {
+                columnStyles[i] = { cellWidth: dayColWidth, halign: 'center', fontSize: 7 };
+            }
+            columnStyles[numDays + 2] = { cellWidth: 12, halign: 'center', fontStyle: 'bold', textColor: cores.sataBlue };
+            
+            doc.autoTable({
+                head: headers,
+                body: body,
+                startY: 48,
+                theme: 'grid',
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 1.5,
+                    lineColor: cores.border,
+                    lineWidth: 0.1,
+                    font: 'helvetica',
+                    textColor: cores.text,
+                    fillColor: cores.card
+                },
+                headStyles: {
+                    fillColor: cores.bg,
+                    textColor: cores.muted,
+                    fontSize: 7,
+                    fontStyle: 'bold',
+                    halign: 'center',
+                    valign: 'middle'
+                },
+                columnStyles: columnStyles,
+                didParseCell: function(data) {
+                    if (data.section === 'body' && data.column.index >= 2 && data.column.index < numDays + 2) {
+                        const valor = data.cell.raw;
+                        
+                        const num = parseInt(valor);
+                        const isNumber = !isNaN(num) && num >= 0 && num <= 24 && valor.toString().match(/^\d+$/);
+                        const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(valor);
+                        
+                        if (valor === 'F' || valor === '-' || valor === '') {
+                            data.cell.styles.fillColor = cores.offBg;
+                            data.cell.styles.textColor = cores.off;
+                        } else if (valor === 'FE') {
+                            data.cell.styles.fillColor = cores.vacationBg;
+                            data.cell.styles.textColor = [180, 83, 9];
+                        } else if (isNumber || isHorario) {
+                            data.cell.styles.fillColor = cores.workBg;
+                            data.cell.styles.textColor = cores.workText;
+                        }
+                    }
+                    
+                    if (data.section === 'body' && data.column.index === 1) {
+                        const turno = data.cell.raw;
+                        const turnoColor = {
+                            'A': [52, 211, 153], 'B': [96, 165, 250], 'C': [251, 191, 36],
+                            'D': [244, 114, 182], 'E': [167, 139, 250], 'F': [248, 113, 113], 'G': [34, 211, 238]
+                        }[turno] || cores.text;
+                        data.cell.styles.textColor = turnoColor;
+                    }
+                    
+                    if (data.column.index === numDays + 2) {
+                        data.cell.styles.fillColor = [15, 23, 42];
+                    }
+                },
+                margin: { left: 10, right: 10 }
+            });
+            
+            const finalY = doc.lastAutoTable.finalY + 5;
+            doc.setFillColor(...cores.card);
+            doc.rect(10, finalY, 277, 12, 'F');
+            
+            doc.setFontSize(8);
+            let x = 15;
+            
+            const legendas = [
+                { cor: cores.work, bg: cores.workBg, txt: 'Trabalho (Núm/Horário)' },
+                { cor: cores.off, bg: cores.offBg, txt: 'Folga (F)' },
+                { cor: [180, 83, 9], bg: cores.vacationBg, txt: 'Férias (FE)' }
+            ];
+            
+            legendas.forEach(item => {
+                doc.setFillColor(...item.bg);
+                doc.setDrawColor(...item.cor);
+                doc.rect(x, finalY + 3, 4, 4, 'FD');
+                doc.setTextColor(...item.cor);
+                doc.text(item.txt, x + 6, finalY + 6);
+                x += 50;
+            });
+            
+            doc.setTextColor(...cores.muted);
+            doc.text(`SATA Security • Gerado em: ${new Date().toLocaleString('pt-BR')}`, 180, finalY + 6);
+            
+            doc.save(`escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`);
+        }
+
+        function drawFallbackLogo(doc, cores) {
+            doc.setTextColor(...cores.sataBlue);
+            doc.setFontSize(28);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Security', 148, 26, { align: 'center' });
+            
+            doc.setTextColor(...cores.sataGreen);
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text('SATA', 148, 32, { align: 'center' });
+        }
+
+        function carregarLogo() {
+            const img = new Image();
+            img.src = 'sata.png';
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                const base64 = canvas.toDataURL('image/png');
+                localStorage.setItem('sataLogoBase64', base64);
+            };
+        }
+        
+        carregarLogo();
+
+        document.getElementById('modalFunc').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+                e.preventDefault();
+                undoLastAction();
+            }
+        });
+
+        updateMonth();
+    </script>
+</body>
+</html>
