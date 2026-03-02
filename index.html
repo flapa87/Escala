@@ -16,7 +16,7 @@
         }
 
         :root {
-            /* Nova paleta sofisticada */
+            /* Tema Escuro (Padrão) */
             --bg-primary: #0a0f1a;
             --bg-secondary: #111827;
             --bg-tertiary: #1f2937;
@@ -32,14 +32,12 @@
             --text-muted: #94a3b8;
             --text-disabled: #64748b;
             
-            /* Cores SATA refinadas */
             --sata-blue: #0066cc;
             --sata-blue-light: #3b82f6;
             --sata-blue-dark: #004d99;
             --sata-green: #c8db00;
             --sata-green-light: #d4e600;
             
-            /* Categorias de células */
             --work-primary: #3b82f6;
             --work-bg: rgba(59, 130, 246, 0.15);
             --work-glow: rgba(59, 130, 246, 0.4);
@@ -53,17 +51,58 @@
             
             --weekend-bg: rgba(148, 163, 184, 0.08);
             
-            /* Sombras */
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
             --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
             --shadow-glow-green: 0 0 20px rgba(200, 219, 0, 0.3);
             
-            /* Transições */
             --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
             --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
             --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --toggle-bg: #374151;
+            --toggle-circle: #f8fafc;
+        }
+
+        [data-theme="light"] {
+            /* Tema Claro */
+            --bg-primary: #f1f5f9;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-hover: #f1f5f9;
+            
+            --border-subtle: rgba(148, 163, 184, 0.2);
+            --border-default: rgba(148, 163, 184, 0.3);
+            --border-strong: rgba(148, 163, 184, 0.4);
+            
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --text-disabled: #94a3b8;
+            
+            --work-primary: #2563eb;
+            --work-bg: rgba(37, 99, 235, 0.12);
+            --work-glow: rgba(37, 99, 235, 0.3);
+            
+            --off-primary: #64748b;
+            --off-bg: rgba(100, 116, 139, 0.08);
+            
+            --vacation-primary: #d97706;
+            --vacation-bg: rgba(217, 119, 6, 0.12);
+            --vacation-glow: rgba(217, 119, 6, 0.3);
+            
+            --weekend-bg: rgba(148, 163, 184, 0.15);
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-glow-blue: 0 0 20px rgba(37, 99, 235, 0.25);
+            --shadow-glow-green: 0 0 20px rgba(200, 219, 0, 0.25);
+            
+            --toggle-bg: #cbd5e1;
+            --toggle-circle: #ffffff;
         }
 
         body {
@@ -79,9 +118,15 @@
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background-color var(--transition-base), color var(--transition-base);
         }
 
-        /* Header Premium */
+        [data-theme="light"] body {
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 102, 204, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(200, 219, 0, 0.03) 0%, transparent 50%);
+        }
+
         .header {
             display: flex;
             justify-content: space-between;
@@ -96,6 +141,7 @@
             gap: 20px;
             position: relative;
             overflow: hidden;
+            transition: all var(--transition-base);
         }
 
         .header::before {
@@ -134,6 +180,10 @@
             transition: transform var(--transition-base);
         }
 
+        [data-theme="light"] .company-logo {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
         .company-logo:hover {
             transform: scale(1.02);
         }
@@ -146,9 +196,13 @@
             letter-spacing: 3px;
             margin-top: 8px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: color var(--transition-base);
         }
 
-        /* Controles de Mês Estilizados */
+        [data-theme="light"] .company-subtitle {
+            text-shadow: none;
+        }
+
         .month-controls {
             display: flex;
             align-items: center;
@@ -158,6 +212,7 @@
             border-radius: 12px;
             border: 1px solid var(--border-default);
             box-shadow: var(--shadow-sm);
+            transition: all var(--transition-base);
         }
 
         .month-controls select, .month-controls input {
@@ -208,11 +263,11 @@
             transform: translateY(0);
         }
 
-        /* Botões Premium */
         .controls {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
         .btn {
@@ -271,47 +326,61 @@
             filter: brightness(1.1);
         }
 
-        .btn-success {
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-color: transparent;
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.3);
+        /* Toggle Switch Moderno */
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: var(--toggle-bg);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            border: 2px solid var(--border-default);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .btn-success:hover {
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        .theme-toggle:hover {
+            border-color: var(--sata-blue-light);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            border-color: transparent;
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+        .theme-toggle-circle {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: var(--toggle-circle);
+            border-radius: 50%;
+            transition: transform var(--transition-base), background-color var(--transition-base);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
         }
 
-        .btn-danger:hover {
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+        [data-theme="light"] .theme-toggle-circle {
+            transform: translateX(28px);
         }
 
-        .btn-warning {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            border-color: transparent;
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
+        .theme-icon {
+            transition: opacity var(--transition-fast);
         }
 
-        .btn-warning:hover:not(:disabled) {
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        .theme-icon-sun {
+            opacity: 0;
+            position: absolute;
         }
 
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none;
-            filter: grayscale(0.5);
+        [data-theme="light"] .theme-icon-moon {
+            opacity: 0;
         }
 
-        /* Toolbar Aprimorada */
+        [data-theme="light"] .theme-icon-sun {
+            opacity: 1;
+        }
+
         .toolbar {
             display: flex;
             justify-content: space-between;
@@ -324,6 +393,7 @@
             box-shadow: var(--shadow-sm);
             flex-wrap: wrap;
             gap: 16px;
+            transition: all var(--transition-base);
         }
 
         .legend-bar {
@@ -357,26 +427,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .day-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .undo-info {
-            font-size: 0.8rem;
-            color: var(--sata-green);
-            margin-left: 12px;
-            font-weight: 500;
-            opacity: 0;
-            transition: opacity var(--transition-base);
-        }
-
-        .undo-info.visible {
-            opacity: 1;
-        }
-
-        /* Cards de Estatísticas */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -433,7 +483,6 @@
             line-height: 1;
         }
 
-        /* Tabela Premium */
         .table-wrapper {
             background: var(--bg-card);
             border: 1px solid var(--border-default);
@@ -442,6 +491,7 @@
             margin-bottom: 24px;
             box-shadow: var(--shadow-md);
             position: relative;
+            transition: all var(--transition-base);
         }
 
         .table-wrapper::before {
@@ -460,17 +510,17 @@
             border-collapse: separate;
             border-spacing: 0;
             table-layout: fixed;
-            min-width: 900px;
+            min-width: 1100px;
         }
 
         thead th {
             background: var(--bg-secondary);
             color: var(--text-muted);
             font-weight: 700;
-            padding: 14px 6px;
+            padding: 16px 8px;
             text-align: center;
             border-bottom: 2px solid var(--border-strong);
-            font-size: 11px;
+            font-size: 12px;
             position: sticky;
             top: 0;
             z-index: 10;
@@ -480,24 +530,24 @@
         }
 
         th.name-col { 
-            width: 160px; 
+            width: 180px; 
             text-align: left; 
-            padding-left: 16px; 
-            min-width: 160px;
+            padding-left: 20px; 
+            min-width: 180px;
         }
-        th.turno-col { width: 50px; min-width: 50px; }
+        th.turno-col { width: 60px; min-width: 60px; }
         th.dia-col { 
-            width: 36px; 
-            min-width: 36px;
+            width: 55px; 
+            min-width: 55px;
             cursor: pointer;
             transition: all var(--transition-fast);
+            padding: 16px 4px;
         }
         th.dia-col:hover {
             background: var(--bg-hover);
             color: var(--text-primary);
         }
-        th.total-col { width: 55px; min-width: 55px; }
-        th.actions-col { width: 90px; min-width: 90px; }
+        th.total-col { width: 70px; min-width: 70px; }
 
         tbody tr {
             transition: all var(--transition-fast);
@@ -508,19 +558,19 @@
         }
 
         tbody td {
-            padding: 10px 4px;
+            padding: 12px 6px;
             text-align: center;
             border-right: 1px solid var(--border-subtle);
             border-bottom: 1px solid var(--border-subtle);
-            font-size: 12px;
-            height: 44px;
+            font-size: 13px;
+            height: 52px;
             transition: all var(--transition-fast);
         }
 
         tbody td.name-cell {
             text-align: left;
-            padding-left: 16px;
-            font-size: 12px;
+            padding-left: 20px;
+            font-size: 13px;
             border-right: 2px solid var(--border-strong);
             font-weight: 600;
         }
@@ -530,11 +580,11 @@
             background: transparent;
             border: none;
             color: var(--text-primary);
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 600;
             font-family: inherit;
-            padding: 4px;
-            border-radius: 4px;
+            padding: 6px;
+            border-radius: 6px;
             transition: all var(--transition-fast);
         }
 
@@ -546,7 +596,7 @@
 
         tbody td.turno-cell {
             font-weight: 800;
-            font-size: 13px;
+            font-size: 14px;
             border-right: 2px solid var(--border-strong);
         }
 
@@ -554,30 +604,36 @@
             font-weight: 800;
             color: var(--sata-blue-light);
             border-right: 2px solid var(--border-strong);
-            font-size: 13px;
+            font-size: 14px;
             background: rgba(59, 130, 246, 0.05);
         }
 
         .editable-cell {
             cursor: text;
             transition: all var(--transition-fast);
-            border-radius: 6px;
-            font-weight: 700;
+            border-radius: 8px;
+            font-weight: 600;
             position: relative;
+            min-width: 45px;
+            letter-spacing: 0.3px;
         }
 
         .editable-cell:hover {
             background: rgba(255, 255, 255, 0.1);
-            transform: scale(1.1);
+            transform: scale(1.05);
             z-index: 5;
             box-shadow: var(--shadow-md);
+        }
+
+        [data-theme="light"] .editable-cell:hover {
+            background: rgba(0, 0, 0, 0.05);
         }
 
         .editable-cell:focus {
             outline: none;
             background: var(--bg-tertiary);
             box-shadow: 0 0 0 2px var(--sata-blue-light), var(--shadow-glow-blue);
-            transform: scale(1.15);
+            transform: scale(1.1);
             z-index: 10;
         }
 
@@ -587,12 +643,12 @@
             border: none;
             color: inherit;
             font-weight: 800;
-            font-size: 13px;
+            font-size: 14px;
             text-align: center;
             cursor: pointer;
             font-family: inherit;
-            padding: 4px;
-            border-radius: 6px;
+            padding: 6px;
+            border-radius: 8px;
             transition: all var(--transition-fast);
         }
 
@@ -608,7 +664,6 @@
             font-weight: 600;
         }
 
-        /* Cores dos turnos com glow */
         .t-A { color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.3); }
         .t-B { color: #60a5fa; text-shadow: 0 0 10px rgba(96, 165, 250, 0.3); }
         .t-C { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
@@ -617,9 +672,17 @@
         .t-F { color: #f87171; text-shadow: 0 0 10px rgba(248, 113, 113, 0.3); }
         .t-G { color: #22d3ee; text-shadow: 0 0 10px rgba(34, 211, 238, 0.3); }
 
+        [data-theme="light"] .t-A { text-shadow: none; }
+        [data-theme="light"] .t-B { text-shadow: none; }
+        [data-theme="light"] .t-C { text-shadow: none; }
+        [data-theme="light"] .t-D { text-shadow: none; }
+        [data-theme="light"] .t-E { text-shadow: none; }
+        [data-theme="light"] .t-F { text-shadow: none; }
+        [data-theme="light"] .t-G { text-shadow: none; }
+
         .day-cell { 
-            font-size: 12px; 
-            font-weight: 700;
+            font-size: 13px; 
+            font-weight: 600;
         }
         
         .d-work { 
@@ -628,6 +691,12 @@
             text-shadow: 0 0 8px var(--work-glow);
             box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.2);
         }
+        
+        [data-theme="light"] .d-work {
+            text-shadow: none;
+            color: var(--work-primary);
+        }
+        
         .d-off { 
             background: var(--off-bg); 
             color: var(--text-muted);
@@ -644,132 +713,17 @@
             text-shadow: 0 0 8px var(--vacation-glow);
             box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.2);
         }
+        
+        [data-theme="light"] .d-vacation {
+            text-shadow: none;
+            color: var(--vacation-primary);
+        }
 
         .weekend-header {
             background: var(--weekend-bg) !important;
             color: var(--text-secondary) !important;
         }
 
-        .btn-small {
-            padding: 6px 12px;
-            font-size: 0.75rem;
-            border-radius: 8px;
-        }
-
-        /* Modal Premium */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity var(--transition-base);
-        }
-
-        .modal.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-content {
-            background: var(--bg-card);
-            border: 1px solid var(--border-default);
-            border-radius: 20px;
-            padding: 32px;
-            max-width: 420px;
-            width: 90%;
-            box-shadow: var(--shadow-lg), 0 0 40px rgba(0, 102, 204, 0.2);
-            transform: scale(0.95) translateY(10px);
-            transition: all var(--transition-base);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .modal.active .modal-content {
-            transform: scale(1) translateY(0);
-        }
-
-        .modal-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--sata-blue), var(--sata-green));
-        }
-
-        .modal h3 {
-            margin-bottom: 24px;
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-default);
-            color: var(--text-primary);
-            border-radius: 10px;
-            font-size: 0.95rem;
-            transition: all var(--transition-fast);
-            font-family: inherit;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: var(--sata-blue);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-            background: var(--bg-tertiary);
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 24px;
-        }
-
-        .error-shake {
-            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-            outline: 2px solid var(--danger) !important;
-            background: rgba(239, 68, 68, 0.1) !important;
-        }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-
-        /* Animações de entrada */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -789,13 +743,14 @@
         .toolbar { animation-delay: 0.2s; }
         .table-wrapper { animation-delay: 0.3s; }
 
-        /* Responsividade */
         @media (max-width: 768px) {
             body { padding: 16px; }
             .header { padding: 16px; }
             .company-logo { height: 50px; }
             .month-controls { order: 3; width: 100%; justify-content: center; }
             .controls { width: 100%; justify-content: center; }
+            table { min-width: 900px; }
+            th.dia-col { width: 50px; min-width: 50px; }
         }
 
         @media print {
@@ -817,7 +772,7 @@
                 border-color: #e5e7eb !important;
                 color: #111827 !important;
             }
-            .btn, .toolbar, .month-controls button, .logo-container { display: none !important; }
+            .btn, .toolbar, .month-controls button, .logo-container, .theme-toggle { display: none !important; }
             .editable-cell { outline: none !important; box-shadow: none !important; }
             .title-section { flex-direction: column; align-items: flex-start; }
             .d-work { background: #dbeafe !important; color: #1e40af !important; }
@@ -867,11 +822,13 @@
         </div>
         
         <div class="controls">
-            <button class="btn btn-primary" onclick="addEmployee()">➕ Funcionário</button>
-            <button class="btn btn-warning" id="btnUndo" onclick="undoLastAction()" disabled>↩️ Desfazer</button>
-            <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
-            <button class="btn btn-success" onclick="exportData()">💾 Salvar</button>
-            <button class="btn btn-primary" onclick="gerarPDF()">📄 PDF</button>
+            <div class="theme-toggle" onclick="toggleTheme()" title="Alternar tema">
+                <div class="theme-toggle-circle">
+                    <span class="theme-icon theme-icon-moon">🌙</span>
+                    <span class="theme-icon theme-icon-sun">☀️</span>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="gerarPDF()">📄 Exportar PDF</button>
         </div>
     </div>
 
@@ -892,14 +849,6 @@
             <div class="legend-item"><div class="dot" style="background: var(--off-primary);"></div> Folga (F)</div>
             <div class="legend-item"><div class="dot" style="background: var(--vacation-primary);"></div> Férias (FE)</div>
         </div>
-        <div style="display: flex; align-items: center;">
-            <div class="day-controls">
-                <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">Ajustar Dias:</span>
-                <button class="btn btn-small" onclick="adjustDays(-1)">➖ Remover</button>
-                <button class="btn btn-small btn-primary" onclick="adjustDays(1)">➕ Adicionar</button>
-            </div>
-            <span class="undo-info" id="undoInfo"></span>
-        </div>
     </div>
 
     <div class="table-wrapper">
@@ -909,47 +858,21 @@
         </table>
     </div>
 
-    <div id="modalFunc" class="modal">
-        <div class="modal-content">
-            <h3>➕ Adicionar Funcionário</h3>
-            <div class="form-group">
-                <label>Nome completo</label>
-                <input type="text" id="newName" placeholder="Ex: João Silva">
-            </div>
-            <div class="form-group">
-                <label>Matrícula</label>
-                <input type="text" id="newMat" placeholder="Ex: 1234">
-            </div>
-            <div class="form-group">
-                <label>Turno</label>
-                <select id="newTurno">
-                    <option value="A">A (05:00-09:00)</option>
-                    <option value="B">B (06:00-10:00)</option>
-                    <option value="C">C (14:00-23:00)</option>
-                    <option value="D">D (08:00-12:00)</option>
-                    <option value="E">E (11:00-15:00)</option>
-                    <option value="F">F (20:00-00:00)</option>
-                    <option value="G">G (09:00-17:00)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Horário</label>
-                <input type="text" id="newHorario" placeholder="Ex: 08:00-12:00">
-            </div>
-            <div class="modal-buttons">
-                <button class="btn" onclick="closeModal()">Cancelar</button>
-                <button class="btn btn-primary" onclick="confirmAddEmployee()">Adicionar</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // [Todo o JavaScript permanece exatamente igual ao original fornecido]
+        // Verificar tema salvo
+        const savedTheme = localStorage.getItem('sata-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('sata-theme', newTheme);
+        }
+
         let currentMonth = 2;
         let currentYear = 2026;
         let numDays = 31;
-        let previousNumDays = 31;
-        let actionHistory = [];
         
         const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
                            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
@@ -991,51 +914,18 @@
             if (valor === 'FE') return 'FE';
             if (valor === 'F') return 'F';
             
+            // Aceitar formatos de hora HH:MM ou H:MM
             const horarioRegex = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
             if (horarioRegex.test(valor)) return valor;
+            
+            // Aceitar formato data DD/MM ou D/M
+            const dataRegex = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/;
+            if (dataRegex.test(valor)) return valor;
             
             const num = parseInt(valor);
             if (!isNaN(num) && num >= 0 && num <= 24) return num.toString();
             
             return null;
-        }
-
-        function saveState(actionType, data = null) {
-            const state = {
-                type: actionType,
-                funcionarios: JSON.parse(JSON.stringify(funcionarios)),
-                numDays: numDays,
-                timestamp: new Date().toLocaleTimeString(),
-                data: data
-            };
-            actionHistory.push(state);
-            if (actionHistory.length > 20) actionHistory.shift();
-            updateUndoButton();
-        }
-
-        function undoLastAction() {
-            if (actionHistory.length === 0) return;
-            
-            const lastState = actionHistory.pop();
-            funcionarios = JSON.parse(JSON.stringify(lastState.funcionarios));
-            numDays = lastState.numDays;
-            previousNumDays = numDays;
-            
-            document.getElementById('statDiasMes').textContent = numDays;
-            
-            renderTable();
-            updateStats();
-            updateUndoButton();
-            
-            const info = document.getElementById('undoInfo');
-            info.textContent = `✓ Desfeito: ${lastState.type}`;
-            info.classList.add('visible');
-            setTimeout(() => { info.classList.remove('visible'); }, 3000);
-        }
-
-        function updateUndoButton() {
-            const btn = document.getElementById('btnUndo');
-            btn.disabled = actionHistory.length === 0;
         }
 
         function getDaysInMonth(month, year) {
@@ -1060,9 +950,7 @@
             const newNumDays = getDaysInMonth(currentMonth, currentYear);
             
             if (newNumDays !== numDays) {
-                saveState('changeMonth', { oldDays: numDays, newDays: newNumDays });
                 numDays = newNumDays;
-                previousNumDays = numDays;
                 
                 funcionarios.forEach(func => {
                     if (func.dias.length < numDays) {
@@ -1089,29 +977,6 @@
             updateMonth();
         }
 
-        function adjustDays(delta) {
-            const newNumDays = numDays + delta;
-            if (newNumDays < 28 || newNumDays > 31) {
-                alert("O mês deve ter entre 28 e 31 dias!");
-                return;
-            }
-            
-            saveState('adjustDays', { delta, previousDays: numDays });
-            previousNumDays = numDays;
-            numDays = newNumDays;
-            
-            funcionarios.forEach(func => {
-                if (delta > 0) {
-                    for (let i = 0; i < delta; i++) func.dias.push("F");
-                } else {
-                    func.dias = func.dias.slice(0, numDays);
-                }
-            });
-            
-            renderTable();
-            updateStats();
-        }
-
         function getCellClassAndValue(dia, isWeekendDay) {
             let classe = 'day-cell editable-cell';
             let valor = dia;
@@ -1120,13 +985,14 @@
             const num = parseInt(dia);
             const isNumber = !isNaN(num) && num >= 0 && num <= 24 && dia.toString().match(/^\d+$/);
             const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(dia);
+            const isData = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(dia);
             
             if (dia === 'F' || dia === '0' || dia === '-' || dia === '') {
                 classe += ' d-off';
                 valor = 'F';
             } else if (dia === 'FE') {
                 classe += ' d-vacation';
-            } else if (isNumber || isHorario) {
+            } else if (isNumber || isHorario || isData) {
                 classe += ' d-work';
                 isWork = true;
             } else {
@@ -1154,7 +1020,6 @@
             
             headerHTML += `
                     <th class="total-col">Total</th>
-                    <th class="actions-col">Ações</th>
                 </tr>
             `;
             thead.innerHTML = headerHTML;
@@ -1190,9 +1055,6 @@
                         </td>
                         ${cells}
                         <td class="total-cell">${total}d</td>
-                        <td>
-                            <button class="btn btn-small btn-danger" onclick="removeEmployee(${idx})">🗑️</button>
-                        </td>
                     </tr>
                 `;
             }).join('');
@@ -1201,13 +1063,9 @@
         }
 
         function updateTurno(idx, newTurno) {
-            const oldTurno = funcionarios[idx].turno;
-            if (oldTurno !== newTurno) {
-                saveState('updateTurno', { idx, oldTurno });
-                funcionarios[idx].turno = newTurno;
-                funcionarios[idx].horario = turnoHorarios[newTurno];
-                renderTable();
-            }
+            funcionarios[idx].turno = newTurno;
+            funcionarios[idx].horario = turnoHorarios[newTurno];
+            renderTable();
         }
 
         function updateCell(funcIdx, dayIdx, element) {
@@ -1226,7 +1084,6 @@
             }
             
             if (oldValue !== validatedValue) {
-                saveState('updateCell', { funcIdx, dayIdx, oldValue });
                 funcionarios[funcIdx].dias[dayIdx] = validatedValue;
                 renderTable();
                 updateStats();
@@ -1236,11 +1093,7 @@
         }
 
         function updateName(idx, value) {
-            const oldName = funcionarios[idx].nome;
-            if (oldName !== value) {
-                saveState('updateName', { idx, oldName });
-                funcionarios[idx].nome = value;
-            }
+            funcionarios[idx].nome = value;
         }
 
         function handleKey(event, funcIdx, dayIdx) {
@@ -1253,17 +1106,14 @@
         }
 
         function fillColumn(day) {
-            const value = prompt(`Preencher dia ${day} para todos:\n• F = Folga\n• FE = Férias\n• Número (0-24) = Horas\n• HH:MM = Horário`, "8");
+            const value = prompt(`Preencher dia ${day} para todos:\n• F = Folga\n• FE = Férias\n• Número (0-24) = Horas\n• HH:MM = Horário\n• DD/MM = Data`, "8");
             
             if (value !== null) {
                 const validated = validarEntrada(value);
                 if (validated === null) {
-                    alert("Valor inválido! Use: F, FE, número (0-24) ou horário (HH:MM)");
+                    alert("Valor inválido! Use: F, FE, número (0-24), horário (HH:MM) ou data (DD/MM)");
                     return;
                 }
-                
-                const oldValues = funcionarios.map(f => f.dias[day - 1]);
-                saveState('fillColumn', { day, oldValues });
                 
                 funcionarios.forEach(func => {
                     if (day - 1 < func.dias.length) func.dias[day - 1] = validated;
@@ -1274,109 +1124,30 @@
             }
         }
 
-        function addEmployee() {
-            document.getElementById('modalFunc').classList.add('active');
-            document.getElementById('newName').focus();
-        }
-
-        function closeModal() {
-            document.getElementById('modalFunc').classList.remove('active');
-            document.getElementById('newName').value = '';
-            document.getElementById('newMat').value = '';
-            document.getElementById('newHorario').value = '';
-        }
-
-        function confirmAddEmployee() {
-            const nome = document.getElementById('newName').value;
-            const mat = document.getElementById('newMat').value;
-            const turno = document.getElementById('newTurno').value;
-            const horario = document.getElementById('newHorario').value || turnoHorarios[turno];
-            
-            if (!nome) { alert("Digite o nome do funcionário!"); return; }
-            
-            const newId = Math.max(...funcionarios.map(f => f.id), 0) + 1;
-            const newEmployee = {
-                id: newId, nome: nome, mat: mat || "0000", turno: turno, horario: horario,
-                dias: Array(numDays).fill("F")
-            };
-            
-            saveState('addEmployee');
-            funcionarios.push(newEmployee);
-            
-            closeModal();
-            renderTable();
-            updateStats();
-        }
-
-        function removeEmployee(idx) {
-            if (confirm(`Remover ${funcionarios[idx].nome}?`)) {
-                const deletedEmployee = JSON.parse(JSON.stringify(funcionarios[idx]));
-                saveState('removeEmployee', { idx, deletedEmployee });
-                
-                funcionarios.splice(idx, 1);
-                renderTable();
-                updateStats();
-            }
-        }
-
         function updateStats() {
             document.getElementById('statFunc').textContent = funcionarios.length;
             document.getElementById('statDiasMes').textContent = numDays;
         }
 
-        function exportData() {
-            const data = { mes: currentMonth, ano: currentYear, dias: numDays, funcionarios: funcionarios };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.json`;
-            a.click();
-        }
-
-        window.addEventListener('dragover', e => e.preventDefault());
-        window.addEventListener('drop', e => {
-            e.preventDefault();
-            const file = e.dataTransfer.files[0];
-            if (file && file.name.endsWith('.json')) {
-                const reader = new FileReader();
-                reader.onload = event => {
-                    try {
-                        const data = JSON.parse(event.target.result);
-                        saveState('loadFile');
-                        currentMonth = data.mes;
-                        currentYear = data.ano;
-                        numDays = data.dias;
-                        previousNumDays = numDays;
-                        funcionarios = data.funcionarios;
-                        document.getElementById('monthSelect').value = currentMonth;
-                        document.getElementById('yearInput').value = currentYear;
-                        renderTable();
-                        updateStats();
-                        alert("Dados carregados com sucesso!");
-                    } catch (err) { alert("Erro ao carregar arquivo!"); }
-                };
-                reader.readAsText(file);
-            }
-        });
-
         function gerarPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l', 'mm', 'a4');
             
+            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+            
             const cores = {
-                bg: [11, 17, 32],
-                card: [21, 30, 50],
-                border: [30, 41, 59],
-                text: [226, 232, 240],
-                muted: [148, 163, 184],
+                bg: isLight ? [241, 245, 249] : [11, 17, 32],
+                card: isLight ? [255, 255, 255] : [21, 30, 50],
+                border: isLight ? [226, 232, 240] : [30, 41, 59],
+                text: isLight ? [15, 23, 42] : [226, 232, 240],
+                muted: isLight ? [100, 116, 139] : [148, 163, 184],
                 work: [59, 130, 246],
-                workBg: [219, 234, 254],
-                workText: [37, 99, 235],
-                off: [100, 116, 139],
-                offBg: [241, 245, 249],
-                vacation: [245, 158, 11],
-                vacationBg: [254, 243, 199],
+                workBg: isLight ? [219, 234, 254] : [219, 234, 254],
+                workText: isLight ? [37, 99, 235] : [37, 99, 235],
+                off: isLight ? [100, 116, 139] : [100, 116, 139],
+                offBg: isLight ? [241, 245, 249] : [241, 245, 249],
+                vacation: isLight ? [217, 119, 6] : [245, 158, 11],
+                vacationBg: isLight ? [254, 243, 199] : [254, 243, 199],
                 sataBlue: [0, 86, 179],
                 sataGreen: [196, 214, 0]
             };
@@ -1427,6 +1198,7 @@
                     const num = parseInt(dia);
                     const isNumber = !isNaN(num) && num >= 0 && num <= 24 && dia.toString().match(/^\d+$/);
                     const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(dia);
+                    const isData = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(dia);
                     
                     let val = dia;
                     
@@ -1434,7 +1206,7 @@
                         val = 'F';
                     } else if (dia === 'FE') {
                         val = 'FE';
-                    } else if (isNumber || isHorario) {
+                    } else if (isNumber || isHorario || isData) {
                         if (isNumber && num > 0 && num < 24) total++;
                     }
                     
@@ -1450,9 +1222,9 @@
                 1: { cellWidth: 8, halign: 'center', fontStyle: 'bold' }
             };
             
-            const dayColWidth = Math.min(8, (277 - 60) / numDays);
+            const dayColWidth = Math.min(10, (277 - 60) / numDays);
             for (let i = 2; i <= numDays + 1; i++) {
-                columnStyles[i] = { cellWidth: dayColWidth, halign: 'center', fontSize: 7 };
+                columnStyles[i] = { cellWidth: dayColWidth, halign: 'center', fontSize: 8 };
             }
             columnStyles[numDays + 2] = { cellWidth: 12, halign: 'center', fontStyle: 'bold', textColor: cores.sataBlue };
             
@@ -1462,8 +1234,8 @@
                 startY: 48,
                 theme: 'grid',
                 styles: {
-                    fontSize: 8,
-                    cellPadding: 1.5,
+                    fontSize: 9,
+                    cellPadding: 2,
                     lineColor: cores.border,
                     lineWidth: 0.1,
                     font: 'helvetica',
@@ -1473,7 +1245,7 @@
                 headStyles: {
                     fillColor: cores.bg,
                     textColor: cores.muted,
-                    fontSize: 7,
+                    fontSize: 8,
                     fontStyle: 'bold',
                     halign: 'center',
                     valign: 'middle'
@@ -1486,14 +1258,15 @@
                         const num = parseInt(valor);
                         const isNumber = !isNaN(num) && num >= 0 && num <= 24 && valor.toString().match(/^\d+$/);
                         const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(valor);
+                        const isData = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(valor);
                         
                         if (valor === 'F' || valor === '-' || valor === '') {
                             data.cell.styles.fillColor = cores.offBg;
                             data.cell.styles.textColor = cores.off;
                         } else if (valor === 'FE') {
                             data.cell.styles.fillColor = cores.vacationBg;
-                            data.cell.styles.textColor = [180, 83, 9];
-                        } else if (isNumber || isHorario) {
+                            data.cell.styles.textColor = isLight ? [180, 83, 9] : [180, 83, 9];
+                        } else if (isNumber || isHorario || isData) {
                             data.cell.styles.fillColor = cores.workBg;
                             data.cell.styles.textColor = cores.workText;
                         }
@@ -1509,7 +1282,7 @@
                     }
                     
                     if (data.column.index === numDays + 2) {
-                        data.cell.styles.fillColor = [15, 23, 42];
+                        data.cell.styles.fillColor = isLight ? [241, 245, 249] : [15, 23, 42];
                     }
                 },
                 margin: { left: 10, right: 10 }
@@ -1523,9 +1296,9 @@
             let x = 15;
             
             const legendas = [
-                { cor: cores.work, bg: cores.workBg, txt: 'Trabalho (Núm/Horário)' },
+                { cor: cores.work, bg: cores.workBg, txt: 'Trabalho' },
                 { cor: cores.off, bg: cores.offBg, txt: 'Folga (F)' },
-                { cor: [180, 83, 9], bg: cores.vacationBg, txt: 'Férias (FE)' }
+                { cor: isLight ? [180, 83, 9] : [180, 83, 9], bg: cores.vacationBg, txt: 'Férias (FE)' }
             ];
             
             legendas.forEach(item => {
@@ -1534,11 +1307,11 @@
                 doc.rect(x, finalY + 3, 4, 4, 'FD');
                 doc.setTextColor(...item.cor);
                 doc.text(item.txt, x + 6, finalY + 6);
-                x += 50;
+                x += 40;
             });
             
             doc.setTextColor(...cores.muted);
-            doc.text(`SATA Security • Gerado em: ${new Date().toLocaleString('pt-BR')}`, 180, finalY + 6);
+            doc.text(`SATA Security • Gerado em: ${new Date().toLocaleString('pt-BR')}`, 200, finalY + 6);
             
             doc.save(`escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`);
         }
@@ -1570,17 +1343,6 @@
         }
         
         carregarLogo();
-
-        document.getElementById('modalFunc').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
-        });
-
-        document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-                e.preventDefault();
-                undoLastAction();
-            }
-        });
 
         updateMonth();
     </script>
