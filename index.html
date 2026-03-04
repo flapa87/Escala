@@ -2,10 +2,14 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * gap: data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src * data: blob:; img-src * data: blob: content: android-webview-video-poster:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval';">
     <title>SATA Security - Escala de Trabalho</title>
+    
+    <!-- Bibliotecas PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
@@ -13,10 +17,10 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
-            /* Tema Escuro (Padrão) */
             --bg-primary: #0a0f1a;
             --bg-secondary: #111827;
             --bg-tertiary: #1f2937;
@@ -59,14 +63,12 @@
             
             --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
             --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
             
             --toggle-bg: #374151;
             --toggle-circle: #f8fafc;
         }
 
         [data-theme="light"] {
-            /* Tema Claro */
             --bg-primary: #f1f5f9;
             --bg-secondary: #ffffff;
             --bg-tertiary: #f8fafc;
@@ -108,11 +110,8 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-primary);
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 102, 204, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(200, 219, 0, 0.05) 0%, transparent 50%);
             color: var(--text-primary);
-            padding: 24px;
+            padding: 16px;
             font-size: 13px;
             min-height: 100vh;
             line-height: 1.5;
@@ -121,30 +120,24 @@
             transition: background-color var(--transition-base), color var(--transition-base);
         }
 
-        [data-theme="light"] body {
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(0, 102, 204, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(200, 219, 0, 0.03) 0%, transparent 50%);
-        }
-
-        .header {
+        /* ===== HEADER DO APP ===== */
+        .app-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
-            padding: 20px 24px;
+            margin-bottom: 20px;
+            padding: 16px;
             background: var(--bg-card);
             border: 1px solid var(--border-default);
             border-radius: 16px;
             box-shadow: var(--shadow-md);
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 16px;
             position: relative;
             overflow: hidden;
-            transition: all var(--transition-base);
         }
 
-        .header::before {
+        .app-header::before {
             content: '';
             position: absolute;
             top: 0;
@@ -158,9 +151,10 @@
         .title-section {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
             flex-wrap: wrap;
             flex: 1;
+            min-width: 200px;
         }
 
         .logo-container {
@@ -172,69 +166,45 @@
         }
 
         .company-logo {
-            height: 70px;
+            height: 60px;
             width: auto;
-            max-width: 280px;
+            max-width: 240px;
             object-fit: contain;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-            transition: transform var(--transition-base);
-        }
-
-        [data-theme="light"] .company-logo {
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-        }
-
-        .company-logo:hover {
-            transform: scale(1.02);
         }
 
         .company-subtitle {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--sata-green);
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 3px;
-            margin-top: 8px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            transition: color var(--transition-base);
-        }
-
-        [data-theme="light"] .company-subtitle {
-            text-shadow: none;
+            margin-top: 6px;
         }
 
         .month-controls {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             background: var(--bg-secondary);
-            padding: 8px 16px;
+            padding: 8px 12px;
             border-radius: 12px;
             border: 1px solid var(--border-default);
             box-shadow: var(--shadow-sm);
-            transition: all var(--transition-base);
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .month-controls select, .month-controls input {
             background: var(--bg-tertiary);
             border: 1px solid var(--border-default);
             color: var(--text-primary);
-            padding: 8px 12px;
+            padding: 8px 10px;
             border-radius: 8px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 500;
-            transition: all var(--transition-fast);
             cursor: pointer;
-        }
-
-        .month-controls select:hover, .month-controls input:hover {
-            border-color: var(--sata-blue-light);
-        }
-
-        .month-controls select:focus, .month-controls input:focus {
-            outline: none;
-            border-color: var(--sata-blue);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            min-width: 80px;
         }
 
         .month-controls button {
@@ -251,16 +221,7 @@
             justify-content: center;
             transition: all var(--transition-fast);
             box-shadow: var(--shadow-sm);
-        }
-
-        .month-controls button:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-glow-blue);
-            filter: brightness(1.1);
-        }
-
-        .month-controls button:active {
-            transform: translateY(0);
+            touch-action: manipulation;
         }
 
         .controls {
@@ -268,13 +229,14 @@
             gap: 10px;
             flex-wrap: wrap;
             align-items: center;
+            justify-content: center;
         }
 
         .btn {
             background: var(--bg-tertiary);
             border: 1px solid var(--border-default);
             color: var(--text-secondary);
-            padding: 10px 18px;
+            padding: 10px 16px;
             border-radius: 10px;
             cursor: pointer;
             font-size: 0.85rem;
@@ -282,21 +244,9 @@
             transition: all var(--transition-fast);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
-            opacity: 0;
-            transition: opacity var(--transition-fast);
+            gap: 6px;
+            touch-action: manipulation;
+            min-height: 44px;
         }
 
         .btn:hover {
@@ -306,14 +256,6 @@
             box-shadow: var(--shadow-md);
         }
 
-        .btn:hover::before {
-            opacity: 1;
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
         .btn-primary {
             background: linear-gradient(135deg, var(--sata-blue), var(--sata-blue-dark));
             border-color: transparent;
@@ -321,51 +263,37 @@
             box-shadow: 0 4px 6px -1px rgba(0, 102, 204, 0.3);
         }
 
-        .btn-primary:hover {
-            box-shadow: var(--shadow-glow-blue);
-            filter: brightness(1.1);
-        }
-
-        /* Toggle Switch Moderno */
         .theme-toggle {
             position: relative;
-            width: 60px;
-            height: 32px;
+            width: 56px;
+            height: 30px;
             background: var(--toggle-bg);
-            border-radius: 16px;
+            border-radius: 15px;
             cursor: pointer;
             transition: all var(--transition-base);
             border: 2px solid var(--border-default);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--sata-blue-light);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 0 3px rgba(59, 130, 246, 0.1);
+            flex-shrink: 0;
         }
 
         .theme-toggle-circle {
             position: absolute;
             top: 2px;
             left: 2px;
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             background: var(--toggle-circle);
             border-radius: 50%;
-            transition: transform var(--transition-base), background-color var(--transition-base);
+            transition: transform var(--transition-base);
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         [data-theme="light"] .theme-toggle-circle {
-            transform: translateX(28px);
-        }
-
-        .theme-icon {
-            transition: opacity var(--transition-fast);
+            transform: translateX(26px);
         }
 
         .theme-icon-sun {
@@ -381,25 +309,282 @@
             opacity: 1;
         }
 
-        .toolbar {
+        /* ===== CONTAINER DO PDF - VISUAL OTIMIZADO ===== */
+        .pdf-container {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            overflow: hidden;
+            margin: 0 auto 20px;
+            /* Tamanho A4 paisagem: 297mm x 210mm */
+            width: 297mm;
+            max-width: 100%;
+            min-height: 210mm;
+            position: relative;
+            color: #1a1a1a;
+            font-family: 'Inter', Arial, sans-serif;
+        }
+
+        /* Header do PDF */
+        .pdf-header {
+            background: linear-gradient(135deg, #0066cc 0%, #004d99 100%);
+            color: white;
+            padding: 20px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding: 16px 20px;
+            position: relative;
+        }
+
+        .pdf-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c8db00, #0066cc, #c8db00);
+        }
+
+        .pdf-brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pdf-brand-name {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .pdf-brand-sub {
+            font-size: 12px;
+            color: #c8db00;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .pdf-meta {
+            text-align: right;
+        }
+
+        .pdf-title {
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .pdf-date {
+            font-size: 24px;
+            font-weight: 800;
+            color: #c8db00;
+        }
+
+        .pdf-stats-header {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* Corpo do PDF */
+        .pdf-body {
+            padding: 20px 30px;
+            background: #fafbfc;
+        }
+
+        /* Tabela otimizada para leitura */
+        .pdf-table-wrap {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+        }
+
+        .pdf-table thead th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+            padding: 10px 4px;
+            text-align: center;
+            border-bottom: 2px solid #cbd5e1;
+            border-right: 1px solid #e2e8f0;
+            text-transform: uppercase;
+            font-size: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .pdf-table thead th:last-child {
+            border-right: none;
+        }
+
+        .pdf-table th.func-col {
+            width: 18%;
+            text-align: left;
+            padding-left: 12px;
+            font-size: 9px;
+        }
+
+        .pdf-table th.turno-col {
+            width: 5%;
+            font-size: 10px;
+        }
+
+        .pdf-table th.dia-col {
+            width: calc(72% / 31);
+            min-width: 22px;
+            padding: 8px 2px;
+            line-height: 1.2;
+        }
+
+        .pdf-table th.dia-col.weekend {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+
+        .pdf-table th.total-col {
+            width: 7%;
+            font-size: 9px;
+        }
+
+        .pdf-table tbody td {
+            padding: 8px 4px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #f1f5f9;
+            font-weight: 600;
+            height: 32px;
+        }
+
+        .pdf-table tbody td:last-child {
+            border-right: none;
+        }
+
+        .pdf-table td.func-cell {
+            text-align: left;
+            padding-left: 12px;
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 9px;
+            border-right: 2px solid #cbd5e1;
+        }
+
+        .pdf-table td.turno-cell {
+            font-weight: 800;
+            font-size: 11px;
+            border-right: 2px solid #cbd5e1;
+        }
+
+        .pdf-table td.total-cell {
+            font-weight: 800;
+            color: #0066cc;
+            font-size: 10px;
+            background: #f0f9ff;
+        }
+
+        /* Cores dos turnos no PDF */
+        .pdf-t-A { color: #059669; }
+        .pdf-t-B { color: #2563eb; }
+        .pdf-t-C { color: #d97706; }
+        .pdf-t-D { color: #db2777; }
+        .pdf-t-E { color: #7c3aed; }
+        .pdf-t-F { color: #dc2626; }
+        .pdf-t-G { color: #0891b2; }
+
+        /* Cores dos dias no PDF */
+        .pdf-d-work { 
+            background: #dbeafe; 
+            color: #1e40af;
+            font-weight: 700;
+        }
+        .pdf-d-off { 
+            background: #f8fafc; 
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        .pdf-d-vacation { 
+            background: #fef3c7; 
+            color: #92400e;
+            font-weight: 700;
+        }
+        .pdf-d-weekend {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        /* Legenda no PDF */
+        .pdf-legend-section {
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .pdf-legend-items {
+            display: flex;
+            gap: 20px;
+        }
+
+        .pdf-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .pdf-legend-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .pdf-legend-box.work { background: #dbeafe; border-color: #3b82f6; }
+        .pdf-legend-box.off { background: #f8fafc; border-color: #cbd5e1; }
+        .pdf-legend-box.vacation { background: #fef3c7; border-color: #f59e0b; }
+
+        .pdf-footer-text {
+            font-size: 9px;
+            color: #94a3b8;
+            text-align: right;
+        }
+
+        /* ===== INTERFACE DO APP ===== */
+        .app-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 14px 16px;
             background: var(--bg-card);
             border-radius: 12px;
             border: 1px solid var(--border-default);
             box-shadow: var(--shadow-sm);
             flex-wrap: wrap;
-            gap: 16px;
-            transition: all var(--transition-base);
+            gap: 12px;
         }
 
         .legend-bar {
             display: flex;
-            gap: 20px;
-            font-size: 0.8rem;
+            gap: 12px;
+            font-size: 0.75rem;
             color: var(--text-muted);
             flex-wrap: wrap;
         }
@@ -407,43 +592,36 @@
         .legend-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 12px;
+            gap: 6px;
+            padding: 4px 10px;
             background: var(--bg-secondary);
             border-radius: 20px;
             border: 1px solid var(--border-subtle);
-            transition: all var(--transition-fast);
-        }
-
-        .legend-item:hover {
-            border-color: var(--border-default);
-            transform: translateY(-1px);
         }
 
         .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 3px;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-            max-width: 500px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+            max-width: 400px;
         }
 
         .stat-card {
             background: var(--bg-card);
             border: 1px solid var(--border-default);
             border-radius: 12px;
-            padding: 20px;
+            padding: 16px;
             text-align: center;
             position: relative;
             overflow: hidden;
-            transition: all var(--transition-base);
             box-shadow: var(--shadow-sm);
         }
 
@@ -458,23 +636,17 @@
             opacity: 0.8;
         }
 
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-            border-color: var(--border-strong);
-        }
-
         .stat-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 800;
             background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
             -webkit-background-clip: text;
@@ -483,156 +655,113 @@
             line-height: 1;
         }
 
-        .table-wrapper {
+        /* Tabela do App */
+        .app-table-container {
             background: var(--bg-card);
             border: 1px solid var(--border-default);
             border-radius: 16px;
             overflow-x: auto;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             box-shadow: var(--shadow-md);
-            position: relative;
-            transition: all var(--transition-base);
+            -webkit-overflow-scrolling: touch;
         }
 
-        .table-wrapper::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--sata-blue), var(--sata-green), transparent);
-            opacity: 0.5;
-        }
-
-        table {
+        .app-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
             table-layout: fixed;
-            min-width: 1100px;
+            min-width: 1000px;
         }
 
-        thead th {
+        .app-table thead th {
             background: var(--bg-secondary);
             color: var(--text-muted);
             font-weight: 700;
-            padding: 16px 8px;
+            padding: 14px 6px;
             text-align: center;
             border-bottom: 2px solid var(--border-strong);
-            font-size: 12px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            transition: all var(--transition-fast);
         }
 
-        th.name-col { 
+        .app-table th.name-col { 
             width: 180px; 
             text-align: left; 
-            padding-left: 20px; 
-            min-width: 180px;
+            padding-left: 16px; 
         }
-        th.turno-col { width: 60px; min-width: 60px; }
-        th.dia-col { 
-            width: 55px; 
-            min-width: 55px;
+        .app-table th.turno-col { width: 60px; }
+        .app-table th.dia-col { 
+            width: 48px; 
             cursor: pointer;
             transition: all var(--transition-fast);
-            padding: 16px 4px;
         }
-        th.dia-col:hover {
+        .app-table th.dia-col:hover {
             background: var(--bg-hover);
             color: var(--text-primary);
         }
-        th.total-col { width: 70px; min-width: 70px; }
+        .app-table th.total-col { width: 70px; }
 
-        tbody tr {
-            transition: all var(--transition-fast);
-        }
-
-        tbody tr:hover {
-            background: var(--bg-hover);
-        }
-
-        tbody td {
-            padding: 12px 6px;
+        .app-table tbody td {
+            padding: 10px 4px;
             text-align: center;
             border-right: 1px solid var(--border-subtle);
             border-bottom: 1px solid var(--border-subtle);
-            font-size: 13px;
-            height: 52px;
-            transition: all var(--transition-fast);
+            font-size: 12px;
+            height: 48px;
         }
 
-        tbody td.name-cell {
+        .app-table td.name-cell {
             text-align: left;
-            padding-left: 20px;
-            font-size: 13px;
+            padding-left: 16px;
+            font-size: 12px;
             border-right: 2px solid var(--border-strong);
             font-weight: 600;
         }
 
-        tbody td.name-cell input {
+        .app-table td.name-cell input {
             width: 100%;
             background: transparent;
             border: none;
             color: var(--text-primary);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             font-family: inherit;
-            padding: 6px;
+            padding: 4px;
             border-radius: 6px;
-            transition: all var(--transition-fast);
         }
 
-        tbody td.name-cell input:focus {
-            outline: none;
-            background: var(--bg-tertiary);
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-        }
-
-        tbody td.turno-cell {
+        .app-table td.turno-cell {
             font-weight: 800;
-            font-size: 14px;
+            font-size: 13px;
             border-right: 2px solid var(--border-strong);
         }
 
-        tbody td.total-cell {
+        .app-table td.total-cell {
             font-weight: 800;
             color: var(--sata-blue-light);
-            border-right: 2px solid var(--border-strong);
-            font-size: 14px;
+            font-size: 13px;
             background: rgba(59, 130, 246, 0.05);
         }
 
         .editable-cell {
             cursor: text;
             transition: all var(--transition-fast);
-            border-radius: 8px;
+            border-radius: 6px;
             font-weight: 600;
-            position: relative;
-            min-width: 45px;
-            letter-spacing: 0.3px;
         }
 
         .editable-cell:hover {
             background: rgba(255, 255, 255, 0.1);
             transform: scale(1.05);
-            z-index: 5;
             box-shadow: var(--shadow-md);
-        }
-
-        [data-theme="light"] .editable-cell:hover {
-            background: rgba(0, 0, 0, 0.05);
         }
 
         .editable-cell:focus {
             outline: none;
             background: var(--bg-tertiary);
-            box-shadow: 0 0 0 2px var(--sata-blue-light), var(--shadow-glow-blue);
+            box-shadow: 0 0 0 2px var(--sata-blue-light);
             transform: scale(1.1);
             z-index: 10;
         }
@@ -643,159 +772,142 @@
             border: none;
             color: inherit;
             font-weight: 800;
-            font-size: 14px;
+            font-size: 13px;
             text-align: center;
             cursor: pointer;
             font-family: inherit;
-            padding: 6px;
-            border-radius: 8px;
-            transition: all var(--transition-fast);
+            padding: 4px;
+            border-radius: 6px;
         }
 
-        .turno-select:focus {
-            outline: none;
-            background: var(--bg-tertiary);
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
-        }
+        .t-A { color: #34d399; }
+        .t-B { color: #60a5fa; }
+        .t-C { color: #fbbf24; }
+        .t-D { color: #f472b6; }
+        .t-E { color: #a78bfa; }
+        .t-F { color: #f87171; }
+        .t-G { color: #22d3ee; }
 
-        .turno-select option {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .t-A { color: #34d399; text-shadow: 0 0 10px rgba(52, 211, 153, 0.3); }
-        .t-B { color: #60a5fa; text-shadow: 0 0 10px rgba(96, 165, 250, 0.3); }
-        .t-C { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
-        .t-D { color: #f472b6; text-shadow: 0 0 10px rgba(244, 114, 182, 0.3); }
-        .t-E { color: #a78bfa; text-shadow: 0 0 10px rgba(167, 139, 250, 0.3); }
-        .t-F { color: #f87171; text-shadow: 0 0 10px rgba(248, 113, 113, 0.3); }
-        .t-G { color: #22d3ee; text-shadow: 0 0 10px rgba(34, 211, 238, 0.3); }
-
-        [data-theme="light"] .t-A { text-shadow: none; }
-        [data-theme="light"] .t-B { text-shadow: none; }
-        [data-theme="light"] .t-C { text-shadow: none; }
-        [data-theme="light"] .t-D { text-shadow: none; }
-        [data-theme="light"] .t-E { text-shadow: none; }
-        [data-theme="light"] .t-F { text-shadow: none; }
-        [data-theme="light"] .t-G { text-shadow: none; }
-
-        .day-cell { 
-            font-size: 13px; 
-            font-weight: 600;
-        }
-        
         .d-work { 
             background: var(--work-bg); 
             color: #60a5fa;
-            text-shadow: 0 0 8px var(--work-glow);
-            box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.2);
+            font-weight: 700;
         }
-        
-        [data-theme="light"] .d-work {
-            text-shadow: none;
-            color: var(--work-primary);
-        }
-        
         .d-off { 
             background: var(--off-bg); 
             color: var(--text-muted);
-            font-weight: 500;
-        }
-        .d-weekend { 
-            background: var(--weekend-bg); 
-            color: var(--text-secondary);
-            font-weight: 500;
         }
         .d-vacation { 
             background: var(--vacation-bg); 
             color: #fbbf24;
-            text-shadow: 0 0 8px var(--vacation-glow);
-            box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.2);
-        }
-        
-        [data-theme="light"] .d-vacation {
-            text-shadow: none;
-            color: var(--vacation-primary);
+            font-weight: 700;
         }
 
-        .weekend-header {
-            background: var(--weekend-bg) !important;
-            color: var(--text-secondary) !important;
+        /* Toast e Loading */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 1px solid var(--border-default);
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
         }
 
-        .header, .stat-card, .toolbar, .table-wrapper {
-            animation: fadeInUp 0.6s ease-out forwards;
+        .toast.success {
+            border-color: var(--sata-green);
+            background: rgba(200, 219, 0, 0.1);
         }
 
-        .stat-card:nth-child(2) { animation-delay: 0.1s; }
-        .toolbar { animation-delay: 0.2s; }
-        .table-wrapper { animation-delay: 0.3s; }
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-default);
+            border-top-color: var(--sata-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
 
         @media (max-width: 768px) {
-            body { padding: 16px; }
-            .header { padding: 16px; }
+            body { padding: 12px; }
+            .app-header { padding: 12px; }
             .company-logo { height: 50px; }
-            .month-controls { order: 3; width: 100%; justify-content: center; }
+            .month-controls { order: 3; width: 100%; }
             .controls { width: 100%; justify-content: center; }
-            table { min-width: 900px; }
-            th.dia-col { width: 50px; min-width: 50px; }
+            .pdf-container { transform: scale(0.5); transform-origin: top center; }
         }
 
         @media print {
-            body { 
-                background: white !important; 
-                color: black !important;
-                padding: 10px;
+            body { background: white !important; padding: 0; margin: 0; }
+            .app-header, .app-toolbar, .stats-grid, .app-table-container, .toast, .loading-overlay { 
+                display: none !important; 
             }
-            .table-wrapper { 
-                border: 1px solid #ddd !important; 
+            .pdf-container {
+                display: block !important;
+                width: 297mm !important;
+                max-width: none !important;
+                margin: 0 !important;
                 box-shadow: none !important;
+                border-radius: 0 !important;
+                page-break-inside: avoid;
+                transform: none !important;
             }
-            thead th { 
-                background: #f8fafc !important; 
-                color: #374151 !important;
-                border-bottom: 2px solid #e5e7eb !important;
-            }
-            tbody td { 
-                border-color: #e5e7eb !important;
-                color: #111827 !important;
-            }
-            .btn, .toolbar, .month-controls button, .logo-container, .theme-toggle { display: none !important; }
-            .editable-cell { outline: none !important; box-shadow: none !important; }
-            .title-section { flex-direction: column; align-items: flex-start; }
-            .d-work { background: #dbeafe !important; color: #1e40af !important; }
-            .d-off { background: #f1f5f9 !important; color: #64748b !important; }
-            .d-vacation { background: #fef3c7 !important; color: #92400e !important; }
-            .t-A { color: #059669 !important; }
-            .t-B { color: #2563eb !important; }
-            .t-C { color: #d97706 !important; }
-            .t-D { color: #db2777 !important; }
-            .t-E { color: #7c3aed !important; }
-            .t-F { color: #dc2626 !important; }
-            .t-G { color: #0891b2 !important; }
         }
     </style>
 </head>
 <body>
-    <div class="header">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div style="color: white; font-size: 1rem;">Gerando PDF...</div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- ===== INTERFACE DO APP ===== -->
+    <div class="app-header">
         <div class="title-section">
             <div class="logo-container">
-                <img src="sata.png" alt="SATA Security Logo" class="company-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div style="display: none; flex-direction: column; align-items: center; color: var(--sata-blue); font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;">
+                <img src="sata.png" alt="SATA Security" class="company-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div style="display: none; flex-direction: column; align-items: center; color: var(--sata-blue); font-size: 2rem; font-weight: 800;">
                     <span>Security</span>
-                    <span style="color: var(--sata-green); font-size: 1.1rem; letter-spacing: 4px; font-weight: 700;">SATA</span>
+                    <span style="color: var(--sata-green); font-size: 1rem; letter-spacing: 4px;">SATA</span>
                 </div>
                 <span class="company-subtitle">Escala de Trabalho</span>
             </div>
@@ -817,12 +929,12 @@
                 <option value="10">Novembro</option>
                 <option value="11">Dezembro</option>
             </select>
-            <input type="number" id="yearInput" value="2026" min="2020" max="2030" style="width: 80px;" onchange="updateMonth()">
+            <input type="number" id="yearInput" value="2026" min="2020" max="2030" style="width: 70px;" onchange="updateMonth()">
             <button onclick="changeMonth(1)">▶</button>
         </div>
         
         <div class="controls">
-            <div class="theme-toggle" onclick="toggleTheme()" title="Alternar tema">
+            <div class="theme-toggle" onclick="toggleTheme()">
                 <div class="theme-toggle-circle">
                     <span class="theme-icon theme-icon-moon">🌙</span>
                     <span class="theme-icon theme-icon-sun">☀️</span>
@@ -832,7 +944,7 @@
         </div>
     </div>
 
-    <div class="stats-grid" id="statsContainer">
+    <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-label">Funcionários</div>
             <div class="stat-value" id="statFunc">11</div>
@@ -843,7 +955,7 @@
         </div>
     </div>
 
-    <div class="toolbar">
+    <div class="app-toolbar">
         <div class="legend-bar">
             <div class="legend-item"><div class="dot" style="background: var(--work-primary);"></div> Trabalho</div>
             <div class="legend-item"><div class="dot" style="background: var(--off-primary);"></div> Folga (F)</div>
@@ -851,25 +963,70 @@
         </div>
     </div>
 
-    <div class="table-wrapper">
-        <table id="tabelaEscala">
-            <thead id="tableHead"></thead>
-            <tbody id="tableBody"></tbody>
+    <div class="app-table-container">
+        <table class="app-table" id="appTable">
+            <thead id="appTableHead"></thead>
+            <tbody id="appTableBody"></tbody>
         </table>
     </div>
 
+    <!-- ===== PDF OTIMIZADO (inicialmente oculto) ===== -->
+    <div class="pdf-container" id="pdfContainer" style="display: none;">
+        <div class="pdf-header">
+            <div class="pdf-brand">
+                <div class="pdf-brand-name">SATA Security</div>
+                <div class="pdf-brand-sub">Escala de Trabalho</div>
+            </div>
+            <div class="pdf-meta">
+                <div class="pdf-title">Escala Mensal</div>
+                <div class="pdf-date" id="pdfDateDisplay">Março 2026</div>
+                <div class="pdf-stats-header" id="pdfStatsDisplay">11 funcionários • 31 dias</div>
+            </div>
+        </div>
+        
+        <div class="pdf-body">
+            <div class="pdf-table-wrap">
+                <table class="pdf-table" id="pdfTable">
+                    <thead id="pdfTableHead"></thead>
+                    <tbody id="pdfTableBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="pdf-legend-section">
+                <div class="pdf-legend-items">
+                    <div class="pdf-legend-item">
+                        <div class="pdf-legend-box work"></div>
+                        <span>Trabalho (horas/dia)</span>
+                    </div>
+                    <div class="pdf-legend-item">
+                        <div class="pdf-legend-box off"></div>
+                        <span>Folga (F)</span>
+                    </div>
+                    <div class="pdf-legend-item">
+                        <div class="pdf-legend-box vacation"></div>
+                        <span>Férias (FE)</span>
+                    </div>
+                </div>
+                <div class="pdf-footer-text">
+                    Gerado em: <span id="pdfGeneratedDate"></span> • SATA Security
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Verificar tema salvo
+        // Tema
         const savedTheme = localStorage.getItem('sata-theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
         function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('sata-theme', newTheme);
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('sata-theme', next);
         }
 
+        // Dados
         let currentMonth = 2;
         let currentYear = 2026;
         let numDays = 31;
@@ -877,548 +1034,282 @@
         const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
                            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         
-        const turnoHorarios = {
-            'A': '05:00-09:00', 'B': '06:00-10:00', 'C': '14:00-23:00',
-            'D': '08:00-12:00', 'E': '11:00-15:00', 'F': '20:00-00:00', 'G': '09:00-17:00'
+        const turnoCores = {
+            'A': '#059669', 'B': '#2563eb', 'C': '#d97706',
+            'D': '#db2777', 'E': '#7c3aed', 'F': '#dc2626', 'G': '#0891b2'
         };
 
         let funcionarios = [
-            { id: 1, nome: "Ana Daria F. Sarmento", mat: "8143", turno: "D", horario: "08-12", 
-              dias: ["F","F","8","8","8","5","F","F","F","8","8","F","8","F","6","F","8","8","F","8","8","6","F","8","8","F","8","F","F","F","17"] },
-            { id: 2, nome: "Brenda M. Oliveira", mat: "4215", turno: "C", horario: "14-23", 
-              dias: ["F","14","14","14","14","14","F","F","14","14","14","14","14","F","F","0","14","14","14","14","F","F","14","14","14","14","14","F","F","14","14"] },
-            { id: 3, nome: "Celoir A. Moraes", mat: "4094", turno: "E", horario: "11-15", 
-              dias: ["8","12","20","F","20","F","F","F","12","F","12","8","F","12","8","12","F","12","F","8","12","8","12","F","12","F","8","12","8","F","8"] },
-            { id: 4, nome: "Clenilton F. Carvalho", mat: "7382", turno: "A", horario: "05-09", 
-              dias: ["F","5","6","5","F","F","12","8","5","F","5","F","F","5","F","5","6","5","F","F","5","F","5","6","5","F","F","5","8","F","8"] },
-            { id: 5, nome: "Caio V. Sena", mat: "8141", turno: "F", horario: "20-00", 
-              dias: ["F","21","20","21","20","20","F","20","21","20","21","20","F","20","20","21","20","21","20","F","20","20","21","20","21","20","F","20","F","F","F"] },
-            { id: 6, nome: "Elizara Flores", mat: "4796", turno: "E", horario: "11-15", 
-              dias: ["F","12","F","12","F","8","12","8","12","F","12","F","8","12","8","12","F","12","8","8","12","F","12","F","12","8","8","12","F","8","F"] },
-            { id: 7, nome: "Jailson M. Moraes", mat: "5203", turno: "A", horario: "05-09", 
-              dias: ["F","5","6","5","F","F","5","F","5","6","5","F","8","5","F","5","6","5","F","F","5","F","5","6","5","F","F","5","F","8","F"] },
-            { id: 8, nome: "Mayara C. Jesus", mat: "7449", turno: "F", horario: "20-00", 
-              dias: ["20","F","F","12","8","20","20","F","21","20","21","20","20","F","20","21","20","21","20","20","F","F","21","20","21","20","20","F","21","F","F"] },
-            { id: 9, nome: "Rogerio P. Pinheiro", mat: "4267", turno: "D", horario: "08-12", 
-              dias: ["20","21","F","21","F","F","20","20","F","6","8","F","F","20","F","6","F","8","F","F","20","20","6","F","8","F","F","20","21","F","F"] },
-            { id: 10, nome: "Fernando S. Lapa", mat: "4092", turno: "B", horario: "06-10", 
-              dias: ["F","15","15","15","15","15","F","F","FE","FE","15","15","15","15","F","F","15","FE","15","15","15","F","F","15","15","15","15","15","F","F","15"] },
-            { id: 11, nome: "Fabricio J. Aguiar", mat: "4156", turno: "G", horario: "09-17", 
-              dias: ["F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9"] }
+            { id: 1, nome: "Ana Daria F. Sarmento", mat: "8143", turno: "D", dias: ["F","F","8","8","8","5","F","F","F","8","8","F","8","F","6","F","8","8","F","8","8","6","F","8","8","F","8","F","F","F","17"] },
+            { id: 2, nome: "Brenda M. Oliveira", mat: "4215", turno: "C", dias: ["F","14","14","14","14","14","F","F","14","14","14","14","14","F","F","0","14","14","14","14","F","F","14","14","14","14","14","F","F","14","14"] },
+            { id: 3, nome: "Celoir A. Moraes", mat: "4094", turno: "E", dias: ["8","12","20","F","20","F","F","F","12","F","12","8","F","12","8","12","F","12","F","8","12","8","12","F","12","F","8","12","8","F","8"] },
+            { id: 4, nome: "Clenilton F. Carvalho", mat: "7382", turno: "A", dias: ["F","5","6","5","F","F","12","8","5","F","5","F","F","5","F","5","6","5","F","F","5","F","5","6","5","F","F","5","8","F","8"] },
+            { id: 5, nome: "Caio V. Sena", mat: "8141", turno: "F", dias: ["F","21","20","21","20","20","F","20","21","20","21","20","F","20","20","21","20","21","20","F","20","20","21","20","21","20","F","20","F","F","F"] },
+            { id: 6, nome: "Elizara Flores", mat: "4796", turno: "E", dias: ["F","12","F","12","F","8","12","8","12","F","12","F","8","12","8","12","F","12","8","8","12","F","12","F","12","8","8","12","F","8","F"] },
+            { id: 7, nome: "Jailson M. Moraes", mat: "5203", turno: "A", dias: ["F","5","6","5","F","F","5","F","5","6","5","F","8","5","F","5","6","5","F","F","5","F","5","6","5","F","F","5","F","8","F"] },
+            { id: 8, nome: "Mayara C. Jesus", mat: "7449", turno: "F", dias: ["20","F","F","12","8","20","20","F","21","20","21","20","20","F","20","21","20","21","20","20","F","F","21","20","21","20","20","F","21","F","F"] },
+            { id: 9, nome: "Rogerio P. Pinheiro", mat: "4267", turno: "D", dias: ["20","21","F","21","F","F","20","20","F","6","8","F","F","20","F","6","F","8","F","F","20","20","6","F","8","F","F","20","21","F","F"] },
+            { id: 10, nome: "Fernando S. Lapa", mat: "4092", turno: "B", dias: ["F","15","15","15","15","15","F","F","FE","FE","15","15","15","15","F","F","15","FE","15","15","15","F","F","15","15","15","15","15","F","F","15"] },
+            { id: 11, nome: "Fabricio J. Aguiar", mat: "4156", turno: "G", dias: ["F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9"] }
         ];
 
-        function validarEntrada(valor) {
-            valor = valor.trim().toUpperCase();
-            
-            if (valor === '' || valor === '-') return 'F';
-            if (valor === 'FE') return 'FE';
-            if (valor === 'F') return 'F';
-            
-            // Aceitar formatos de hora HH:MM ou H:MM
-            const horarioRegex = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/;
-            if (horarioRegex.test(valor)) return valor;
-            
-            // Aceitar formato data DD/MM ou D/M
-            const dataRegex = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/;
-            if (dataRegex.test(valor)) return valor;
-            
-            const num = parseInt(valor);
-            if (!isNaN(num) && num >= 0 && num <= 24) return num.toString();
-            
+        // Utilitários
+        function showToast(msg, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingOverlay').classList.toggle('active', show);
+        }
+
+        function getDaysInMonth(m, y) {
+            return new Date(y, m + 1, 0).getDate();
+        }
+
+        function isWeekend(d, m, y) {
+            const day = new Date(y, m, d).getDay();
+            return day === 0 || day === 6;
+        }
+
+        function getDayName(d, m, y) {
+            return ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'][new Date(y, m, d).getDay()];
+        }
+
+        function validarEntrada(v) {
+            v = v.trim().toUpperCase();
+            if (v === '' || v === '-') return 'F';
+            if (v === 'FE') return 'FE';
+            if (v === 'F') return 'F';
+            if (/^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(v)) return v;
+            if (/^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(v)) return v;
+            const n = parseInt(v);
+            if (!isNaN(n) && n >= 0 && n <= 24) return n.toString();
             return null;
         }
 
-        function getDaysInMonth(month, year) {
-            return new Date(year, month + 1, 0).getDate();
+        function getCellClass(v) {
+            if (v === 'F' || v === '0' || v === '') return 'd-off';
+            if (v === 'FE') return 'd-vacation';
+            if (!isNaN(parseInt(v)) && parseInt(v) > 0) return 'd-work';
+            return 'd-off';
         }
 
-        function isWeekend(day, month, year) {
-            const date = new Date(year, month, day);
-            const dayOfWeek = date.getDay();
-            return dayOfWeek === 0 || dayOfWeek === 6;
+        function getPdfCellClass(v, isWeekend) {
+            if (v === 'F' || v === '0' || v === '') return isWeekend ? 'pdf-d-weekend' : 'pdf-d-off';
+            if (v === 'FE') return 'pdf-d-vacation';
+            if (!isNaN(parseInt(v)) && parseInt(v) > 0) return 'pdf-d-work';
+            return isWeekend ? 'pdf-d-weekend' : 'pdf-d-off';
         }
 
-        function getDayName(day, month, year) {
-            const date = new Date(year, month, day);
-            const days = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
-            return days[date.getDay()];
-        }
-
+        // Renderização
         function updateMonth() {
             currentMonth = parseInt(document.getElementById('monthSelect').value);
             currentYear = parseInt(document.getElementById('yearInput').value);
-            const newNumDays = getDaysInMonth(currentMonth, currentYear);
+            const newDays = getDaysInMonth(currentMonth, currentYear);
             
-            if (newNumDays !== numDays) {
-                numDays = newNumDays;
-                
-                funcionarios.forEach(func => {
-                    if (func.dias.length < numDays) {
-                        while (func.dias.length < numDays) func.dias.push("F");
-                    } else if (func.dias.length > numDays) {
-                        func.dias = func.dias.slice(0, numDays);
-                    }
+            if (newDays !== numDays) {
+                numDays = newDays;
+                funcionarios.forEach(f => {
+                    if (f.dias.length < numDays) while (f.dias.length < numDays) f.dias.push("F");
+                    else if (f.dias.length > numDays) f.dias = f.dias.slice(0, numDays);
                 });
             }
             
-            renderTable();
-            updateStats();
+            renderApp();
+            renderPDF();
         }
 
         function changeMonth(delta) {
-            let newMonth = currentMonth + delta;
-            let newYear = currentYear;
-            
-            if (newMonth > 11) { newMonth = 0; newYear++; }
-            else if (newMonth < 0) { newMonth = 11; newYear--; }
-            
-            document.getElementById('monthSelect').value = newMonth;
-            document.getElementById('yearInput').value = newYear;
+            let nm = currentMonth + delta, ny = currentYear;
+            if (nm > 11) { nm = 0; ny++; }
+            else if (nm < 0) { nm = 11; ny--; }
+            document.getElementById('monthSelect').value = nm;
+            document.getElementById('yearInput').value = ny;
             updateMonth();
         }
 
-        function getCellClassAndValue(dia, isWeekendDay) {
-            let classe = 'day-cell editable-cell';
-            let valor = dia;
-            let isWork = false;
-            
-            const num = parseInt(dia);
-            const isNumber = !isNaN(num) && num >= 0 && num <= 24 && dia.toString().match(/^\d+$/);
-            const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(dia);
-            const isData = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(dia);
-            
-            if (dia === 'F' || dia === '0' || dia === '-' || dia === '') {
-                classe += ' d-off';
-                valor = 'F';
-            } else if (dia === 'FE') {
-                classe += ' d-vacation';
-            } else if (isNumber || isHorario || isData) {
-                classe += ' d-work';
-                isWork = true;
-            } else {
-                classe += ' d-off';
-                valor = 'F';
-            }
-            
-            return { classe, valor, isWork };
-        }
-
-        function renderTable() {
-            const thead = document.getElementById('tableHead');
-            let headerHTML = `
-                <tr>
-                    <th class="name-col">Funcionário</th>
-                    <th class="turno-col">Turno</th>
-            `;
-            
+        function renderApp() {
+            // Header
+            let h = `<tr><th class="name-col">Funcionário</th><th class="turno-col">T</th>`;
             for (let i = 1; i <= numDays; i++) {
-                const isWeekendDay = isWeekend(i, currentMonth, currentYear);
-                const dayName = getDayName(i, currentMonth, currentYear);
-                const weekendClass = isWeekendDay ? 'weekend-header' : '';
-                headerHTML += `<th class="dia-col ${weekendClass}" onclick="fillColumn(${i})">${i.toString().padStart(2, '0')}<br><small>${dayName}</small></th>`;
+                const wk = isWeekend(i, currentMonth, currentYear);
+                h += `<th class="dia-col ${wk ? 'weekend-header' : ''}" onclick="fillCol(${i})">${i}<br><small>${getDayName(i, currentMonth, currentYear)}</small></th>`;
             }
-            
-            headerHTML += `
-                    <th class="total-col">Total</th>
-                </tr>
-            `;
-            thead.innerHTML = headerHTML;
-            
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = funcionarios.map((func, idx) => {
-                let total = 0;
-                const cells = func.dias.map((dia, dayIdx) => {
-                    const dayNum = dayIdx + 1;
-                    const isWeekendDay = isWeekend(dayNum, currentMonth, currentYear);
-                    
-                    const cellData = getCellClassAndValue(dia, isWeekendDay);
-                    
-                    const num = parseInt(dia);
-                    if (!isNaN(num) && num > 0 && num < 24) total++;
-                    
-                    return `<td class="${cellData.classe}" contenteditable="true" onblur="updateCell(${idx}, ${dayIdx}, this)" onkeydown="handleKey(event, ${idx}, ${dayIdx})">${cellData.valor}</td>`;
+            h += `<th class="total-col">Total</th></tr>`;
+            document.getElementById('appTableHead').innerHTML = h;
+
+            // Body
+            const b = funcionarios.map((f, idx) => {
+                let tot = 0;
+                const cells = f.dias.map((d, i) => {
+                    const n = parseInt(d);
+                    if (!isNaN(n) && n > 0 && n < 24) tot++;
+                    return `<td class="editable-cell ${getCellClass(d)}" contenteditable onblur="updCell(${idx},${i},this)" onkeydown="keyNav(event,${idx},${i})">${d}</td>`;
                 }).join('');
                 
-                const turnoOptions = Object.keys(turnoHorarios).map(t => 
-                    `<option value="${t}" ${func.turno === t ? 'selected' : ''}>${t}</option>`
-                ).join('');
-                
-                return `
-                    <tr>
-                        <td class="name-cell">
-                            <input type="text" value="${func.nome}" onchange="updateName(${idx}, this.value)" title="${func.mat} • ${func.horario}">
-                        </td>
-                        <td class="turno-cell t-${func.turno}">
-                            <select class="turno-select t-${func.turno}" onchange="updateTurno(${idx}, this.value)">
-                                ${turnoOptions}
-                            </select>
-                        </td>
-                        ${cells}
-                        <td class="total-cell">${total}d</td>
-                    </tr>
-                `;
+                return `<tr>
+                    <td class="name-cell"><input value="${f.nome}" onchange="updName(${idx},this.value)"></td>
+                    <td class="turno-cell t-${f.turno}">${f.turno}</td>
+                    ${cells}
+                    <td class="total-cell">${tot}d</td>
+                </tr>`;
             }).join('');
             
-            document.getElementById('statDiasMes').textContent = numDays;
-        }
-
-        function updateTurno(idx, newTurno) {
-            funcionarios[idx].turno = newTurno;
-            funcionarios[idx].horario = turnoHorarios[newTurno];
-            renderTable();
-        }
-
-        function updateCell(funcIdx, dayIdx, element) {
-            const oldValue = funcionarios[funcIdx].dias[dayIdx];
-            const inputValue = element.innerText;
-            
-            const validatedValue = validarEntrada(inputValue);
-            
-            if (validatedValue === null) {
-                element.innerText = oldValue;
-                element.classList.add('error-shake');
-                setTimeout(() => {
-                    element.classList.remove('error-shake');
-                }, 500);
-                return;
-            }
-            
-            if (oldValue !== validatedValue) {
-                funcionarios[funcIdx].dias[dayIdx] = validatedValue;
-                renderTable();
-                updateStats();
-            } else {
-                element.innerText = validatedValue;
-            }
-        }
-
-        function updateName(idx, value) {
-            funcionarios[idx].nome = value;
-        }
-
-        function handleKey(event, funcIdx, dayIdx) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                event.target.blur();
-                const nextCell = document.querySelectorAll('tbody tr')[funcIdx].querySelectorAll('.editable-cell')[dayIdx + 1];
-                if (nextCell) nextCell.focus();
-            }
-        }
-
-        function fillColumn(day) {
-            const value = prompt(`Preencher dia ${day} para todos:\n• F = Folga\n• FE = Férias\n• Número (0-24) = Horas\n• HH:MM = Horário\n• DD/MM = Data`, "8");
-            
-            if (value !== null) {
-                const validated = validarEntrada(value);
-                if (validated === null) {
-                    alert("Valor inválido! Use: F, FE, número (0-24), horário (HH:MM) ou data (DD/MM)");
-                    return;
-                }
-                
-                funcionarios.forEach(func => {
-                    if (day - 1 < func.dias.length) func.dias[day - 1] = validated;
-                });
-                
-                renderTable();
-                updateStats();
-            }
-        }
-
-        function updateStats() {
+            document.getElementById('appTableBody').innerHTML = b;
             document.getElementById('statFunc').textContent = funcionarios.length;
             document.getElementById('statDiasMes').textContent = numDays;
         }
 
-        // Verificar se as bibliotecas estão carregadas
-        function checkLibraries() {
-            if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
-                console.error('jsPDF não carregado');
-                return false;
+        function renderPDF() {
+            // Atualizar info
+            document.getElementById('pdfDateDisplay').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            document.getElementById('pdfStatsDisplay').textContent = `${funcionarios.length} funcionários • ${numDays} dias`;
+            document.getElementById('pdfGeneratedDate').textContent = new Date().toLocaleString('pt-BR');
+
+            // Header
+            let h = `<tr><th class="func-col">FUNCIONÁRIO</th><th class="turno-col">T</th>`;
+            for (let i = 1; i <= numDays; i++) {
+                const wk = isWeekend(i, currentMonth, currentYear);
+                const dn = getDayName(i, currentMonth, currentYear);
+                h += `<th class="dia-col ${wk ? 'weekend' : ''}">${i}<br>${dn}</th>`;
             }
-            if (typeof window.jspdf.jsPDF.prototype.autoTable === 'undefined') {
-                console.error('autotable não carregado');
-                return false;
-            }
-            return true;
+            h += `<th class="total-col">TOT</th></tr>`;
+            document.getElementById('pdfTableHead').innerHTML = h;
+
+            // Body
+            const b = funcionarios.map(f => {
+                let tot = 0;
+                const cells = f.dias.map((d, i) => {
+                    const n = parseInt(d);
+                    if (!isNaN(n) && n > 0 && n < 24) tot++;
+                    const wk = isWeekend(i + 1, currentMonth, currentYear);
+                    return `<td class="${getPdfCellClass(d, wk)}">${d}</td>`;
+                }).join('');
+                
+                return `<tr>
+                    <td class="func-cell">${f.nome}</td>
+                    <td class="turno-cell pdf-t-${f.turno}" style="color: ${turnoCores[f.turno]}">${f.turno}</td>
+                    ${cells}
+                    <td class="total-cell">${tot}d</td>
+                </tr>`;
+            }).join('');
+            
+            document.getElementById('pdfTableBody').innerHTML = b;
         }
 
-        function gerarPDF() {
-            // Verificar se estamos em um WebView/Cordova/APK
-            const isCordova = typeof cordova !== 'undefined';
-            const isAndroid = /Android/i.test(navigator.userAgent);
-            const isWebView = /(WebView|wv)/i.test(navigator.userAgent) || (window.android && window.android.print);
+        // Edição
+        function updCell(fi, di, el) {
+            const old = funcionarios[fi].dias[di];
+            const val = validarEntrada(el.innerText);
+            if (val === null) {
+                el.innerText = old;
+                showToast('Valor inválido', 'error');
+                return;
+            }
+            if (old !== val) {
+                funcionarios[fi].dias[di] = val;
+                renderApp();
+                renderPDF();
+            }
+        }
+
+        function updName(idx, val) {
+            funcionarios[idx].nome = val;
+            renderPDF();
+        }
+
+        function keyNav(e, fi, di) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                e.target.blur();
+                const next = document.querySelectorAll('tbody tr')[fi]?.querySelectorAll('.editable-cell')[di + 1];
+                if (next) next.focus();
+            }
+        }
+
+        function fillCol(d) {
+            const v = prompt(`Dia ${d}: F=Folga, FE=Férias, Número=Horas`, "8");
+            if (v !== null) {
+                const val = validarEntrada(v);
+                if (val === null) {
+                    showToast('Valor inválido', 'error');
+                    return;
+                }
+                funcionarios.forEach(f => { if (d-1 < f.dias.length) f.dias[d-1] = val; });
+                renderApp();
+                renderPDF();
+                showToast('Coluna atualizada', 'success');
+            }
+        }
+
+        // PDF Generation
+        async function gerarPDF() {
+            showLoading(true);
             
             try {
-                // Tentar método nativo do Android primeiro (se disponível)
-                if (isWebView && window.android && window.android.print) {
-                    window.android.print(document.documentElement.outerHTML);
-                    return;
-                }
+                const pdfEl = document.getElementById('pdfContainer');
+                pdfEl.style.display = 'block';
                 
-                // Verificar bibliotecas jsPDF
-                if (!checkLibraries()) {
-                    // Fallback: usar window.print() se jsPDF não estiver disponível
-                    if (confirm('Biblioteca PDF não disponível. Deseja usar a impressão do navegador?')) {
-                        window.print();
-                    }
-                    return;
-                }
+                const canvas = await html2canvas(pdfEl, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    windowWidth: 1123 // 297mm em 96dpi
+                });
                 
                 const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('l', 'mm', 'a4');
+                const pdf = new jsPDF('l', 'mm', 'a4');
                 
-                const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 297;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 
-                const cores = {
-                    bg: isLight ? [241, 245, 249] : [11, 17, 32],
-                    card: isLight ? [255, 255, 255] : [21, 30, 50],
-                    border: isLight ? [226, 232, 240] : [30, 41, 59],
-                    text: isLight ? [15, 23, 42] : [226, 232, 240],
-                    muted: isLight ? [100, 116, 139] : [148, 163, 184],
-                    work: [59, 130, 246],
-                    workBg: isLight ? [219, 234, 254] : [219, 234, 254],
-                    workText: isLight ? [37, 99, 235] : [37, 99, 235],
-                    off: isLight ? [100, 116, 139] : [100, 116, 139],
-                    offBg: isLight ? [241, 245, 249] : [241, 245, 249],
-                    vacation: isLight ? [217, 119, 6] : [245, 158, 11],
-                    vacationBg: isLight ? [254, 243, 199] : [254, 243, 199],
-                    sataBlue: [0, 86, 179],
-                    sataGreen: [196, 214, 0]
-                };
+                // Se altura exceder A4, escalar para caber
+                const pageHeight = 210;
+                let finalWidth = imgWidth;
+                let finalHeight = imgHeight;
+                let y = 0;
                 
-                doc.setFillColor(...cores.bg);
-                doc.rect(0, 0, 297, 210, 'F');
-                
-                doc.setFillColor(...cores.card);
-                doc.rect(10, 10, 277, 30, 'F');
-                
-                // Tentar usar logo do localStorage ou fallback
-                const logoBase64 = localStorage.getItem('sataLogoBase64');
-                
-                if (logoBase64) {
-                    try {
-                        doc.addImage(logoBase64, 'PNG', 110, 12, 80, 20);
-                    } catch(e) {
-                        drawFallbackLogo(doc, cores);
-                    }
+                if (imgHeight > pageHeight) {
+                    finalHeight = pageHeight;
+                    finalWidth = (canvas.width * finalHeight) / canvas.height;
+                    y = 0;
                 } else {
-                    drawFallbackLogo(doc, cores);
+                    y = (pageHeight - imgHeight) / 2;
                 }
                 
-                doc.setTextColor(...cores.text);
-                doc.setFontSize(12);
-                doc.text(`${monthNames[currentMonth].toUpperCase()} ${currentYear}`, 250, 24, { align: 'right' });
+                const x = (297 - finalWidth) / 2;
                 
-                doc.setFontSize(9);
-                doc.setTextColor(...cores.muted);
-                doc.text(`${funcionarios.length} funcionários • ${numDays} dias`, 250, 29, { align: 'right' });
+                pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
                 
-                doc.setTextColor(...cores.sataGreen);
-                doc.setFontSize(10);
-                doc.setFont('helvetica', 'bold');
-                doc.text('ESCALA DE TRABALHO', 148, 38, { align: 'center' });
+                const blob = pdf.output('blob');
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
                 
-                const headers = [['Funcionário', 'T']];
-                for (let i = 1; i <= numDays; i++) {
-                    const dayName = getDayName(i, currentMonth, currentYear);
-                    headers[0].push(`${i.toString().padStart(2, '0')}\n${dayName}`);
-                }
-                headers[0].push('Total');
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+                showToast('PDF gerado!', 'success');
                 
-                const body = funcionarios.map(func => {
-                    const row = [func.nome, func.turno];
-                    let total = 0;
-                    
-                    func.dias.forEach((dia, idx) => {
-                        const num = parseInt(dia);
-                        const isNumber = !isNaN(num) && num >= 0 && num <= 24 && dia.toString().match(/^\d+$/);
-                        const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(dia);
-                        const isData = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(dia);
-                        
-                        let val = dia;
-                        
-                        if (dia === 'F' || dia === '0' || dia === '-' || dia === '') {
-                            val = 'F';
-                        } else if (dia === 'FE') {
-                            val = 'FE';
-                        } else if (isNumber || isHorario || isData) {
-                            if (isNumber && num > 0 && num < 24) total++;
-                        }
-                        
-                        row.push(val);
-                    });
-                    
-                    row.push(`${total}d`);
-                    return row;
-                });
-                
-                const columnStyles = {
-                    0: { cellWidth: 40, halign: 'left', fontStyle: 'bold' },
-                    1: { cellWidth: 8, halign: 'center', fontStyle: 'bold' }
-                };
-                
-                const dayColWidth = Math.min(10, (277 - 60) / numDays);
-                for (let i = 2; i <= numDays + 1; i++) {
-                    columnStyles[i] = { cellWidth: dayColWidth, halign: 'center', fontSize: 8 };
-                }
-                columnStyles[numDays + 2] = { cellWidth: 12, halign: 'center', fontStyle: 'bold', textColor: cores.sataBlue };
-                
-                doc.autoTable({
-                    head: headers,
-                    body: body,
-                    startY: 48,
-                    theme: 'grid',
-                    styles: {
-                        fontSize: 9,
-                        cellPadding: 2,
-                        lineColor: cores.border,
-                        lineWidth: 0.1,
-                        font: 'helvetica',
-                        textColor: cores.text,
-                        fillColor: cores.card
-                    },
-                    headStyles: {
-                        fillColor: cores.bg,
-                        textColor: cores.muted,
-                        fontSize: 8,
-                        fontStyle: 'bold',
-                        halign: 'center',
-                        valign: 'middle'
-                    },
-                    columnStyles: columnStyles,
-                    didParseCell: function(data) {
-                        if (data.section === 'body' && data.column.index >= 2 && data.column.index < numDays + 2) {
-                            const valor = data.cell.raw;
-                            
-                            const num = parseInt(valor);
-                            const isNumber = !isNaN(num) && num >= 0 && num <= 24 && valor.toString().match(/^\d+$/);
-                            const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(valor);
-                            const isData = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(valor);
-                            
-                            if (valor === 'F' || valor === '-' || valor === '') {
-                                data.cell.styles.fillColor = cores.offBg;
-                                data.cell.styles.textColor = cores.off;
-                            } else if (valor === 'FE') {
-                                data.cell.styles.fillColor = cores.vacationBg;
-                                data.cell.styles.textColor = isLight ? [180, 83, 9] : [180, 83, 9];
-                            } else if (isNumber || isHorario || isData) {
-                                data.cell.styles.fillColor = cores.workBg;
-                                data.cell.styles.textColor = cores.workText;
-                            }
-                        }
-                        
-                        if (data.section === 'body' && data.column.index === 1) {
-                            const turno = data.cell.raw;
-                            const turnoColor = {
-                                'A': [52, 211, 153], 'B': [96, 165, 250], 'C': [251, 191, 36],
-                                'D': [244, 114, 182], 'E': [167, 139, 250], 'F': [248, 113, 113], 'G': [34, 211, 238]
-                            }[turno] || cores.text;
-                            data.cell.styles.textColor = turnoColor;
-                        }
-                        
-                        if (data.column.index === numDays + 2) {
-                            data.cell.styles.fillColor = isLight ? [241, 245, 249] : [15, 23, 42];
-                        }
-                    },
-                    margin: { left: 10, right: 10 }
-                });
-                
-                const finalY = doc.lastAutoTable.finalY + 5;
-                doc.setFillColor(...cores.card);
-                doc.rect(10, finalY, 277, 12, 'F');
-                
-                doc.setFontSize(8);
-                let x = 15;
-                
-                const legendas = [
-                    { cor: cores.work, bg: cores.workBg, txt: 'Trabalho' },
-                    { cor: cores.off, bg: cores.offBg, txt: 'Folga (F)' },
-                    { cor: isLight ? [180, 83, 9] : [180, 83, 9], bg: cores.vacationBg, txt: 'Férias (FE)' }
-                ];
-                
-                legendas.forEach(item => {
-                    doc.setFillColor(...item.bg);
-                    doc.setDrawColor(...item.cor);
-                    doc.rect(x, finalY + 3, 4, 4, 'FD');
-                    doc.setTextColor(...item.cor);
-                    doc.text(item.txt, x + 6, finalY + 6);
-                    x += 40;
-                });
-                
-                doc.setTextColor(...cores.muted);
-                doc.text(`SATA Security • Gerado em: ${new Date().toLocaleString('pt-BR')}`, 200, finalY + 6);
-                
-                // Salvar PDF
-                const fileName = `escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`;
-                
-                // Em ambientes mobile/APK, usar método específico se disponível
-                if (isCordova || isAndroid) {
-                    const pdfOutput = doc.output('datauristring');
-                    // Tentar abrir em nova aba ou download
-                    const link = document.createElement('a');
-                    link.href = pdfOutput;
-                    link.download = fileName;
-                    link.target = '_blank';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } else {
-                    doc.save(fileName);
-                }
-                
-            } catch (error) {
-                console.error('Erro ao gerar PDF:', error);
-                alert('Erro ao gerar PDF: ' + error.message + '\n\nTentando método alternativo...');
-                // Fallback final: imprimir página
-                window.print();
+            } catch (err) {
+                console.error(err);
+                showToast('Erro: ' + err.message, 'error');
+            } finally {
+                showLoading(false);
             }
         }
 
-        function drawFallbackLogo(doc, cores) {
-            doc.setTextColor(...cores.sataBlue);
-            doc.setFontSize(28);
-            doc.setFont('helvetica', 'normal');
-            doc.text('Security', 148, 26, { align: 'center' });
-            
-            doc.setTextColor(...cores.sataGreen);
-            doc.setFontSize(14);
-            doc.setFont('helvetica', 'bold');
-            doc.text('SATA', 148, 32, { align: 'center' });
-        }
-
-        function carregarLogo() {
-            const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.src = 'sata.png';
-            img.onload = function() {
-                try {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    const base64 = canvas.toDataURL('image/png');
-                    localStorage.setItem('sataLogoBase64', base64);
-                } catch(e) {
-                    console.log('Não foi possível carregar logo:', e);
-                }
-            };
-            img.onerror = function() {
-                console.log('Logo não encontrado, usando fallback');
-            };
-        }
-        
-        // Aguardar carregamento das bibliotecas antes de inicializar
-        window.addEventListener('load', function() {
-            carregarLogo();
+        // Init
+        window.addEventListener('load', () => {
             updateMonth();
-            
-            // Verificar se bibliotecas carregaram após 2 segundos
-            setTimeout(function() {
-                if (!checkLibraries()) {
-                    console.warn('Bibliotecas PDF não carregadas. Modo de compatibilidade ativado.');
-                }
-            }, 2000);
         });
     </script>
 </body>
