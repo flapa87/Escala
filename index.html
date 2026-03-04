@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Content-Security-Policy" content="default-src * gap: data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src * data: blob:; img-src * data: blob: content: android-webview-video-poster:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval';">
     <title>SATA Security - Escala de Trabalho</title>
     
-    <!-- Bibliotecas PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
@@ -40,32 +38,21 @@
             --sata-blue-light: #3b82f6;
             --sata-blue-dark: #004d99;
             --sata-green: #c8db00;
-            --sata-green-light: #d4e600;
             
             --work-primary: #3b82f6;
             --work-bg: rgba(59, 130, 246, 0.15);
-            --work-glow: rgba(59, 130, 246, 0.4);
             
             --off-primary: #64748b;
             --off-bg: rgba(100, 116, 139, 0.12);
             
             --vacation-primary: #f59e0b;
             --vacation-bg: rgba(245, 158, 11, 0.15);
-            --vacation-glow: rgba(245, 158, 11, 0.4);
-            
-            --weekend-bg: rgba(148, 163, 184, 0.08);
             
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-            --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
-            --shadow-glow-green: 0 0 20px rgba(200, 219, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
             
             --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-            
-            --toggle-bg: #374151;
-            --toggle-circle: #f8fafc;
         }
 
         [data-theme="light"] {
@@ -86,25 +73,16 @@
             
             --work-primary: #2563eb;
             --work-bg: rgba(37, 99, 235, 0.12);
-            --work-glow: rgba(37, 99, 235, 0.3);
             
             --off-primary: #64748b;
             --off-bg: rgba(100, 116, 139, 0.08);
             
             --vacation-primary: #d97706;
             --vacation-bg: rgba(217, 119, 6, 0.12);
-            --vacation-glow: rgba(217, 119, 6, 0.3);
-            
-            --weekend-bg: rgba(148, 163, 184, 0.15);
             
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-glow-blue: 0 0 20px rgba(37, 99, 235, 0.25);
-            --shadow-glow-green: 0 0 20px rgba(200, 219, 0, 0.25);
-            
-            --toggle-bg: #cbd5e1;
-            --toggle-circle: #ffffff;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
         body {
@@ -116,10 +94,48 @@
             min-height: 100vh;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            transition: background-color var(--transition-base), color var(--transition-base);
         }
 
+        /* Bloqueio de Acesso */
+        .access-denied {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .access-denied.hidden {
+            display: none;
+        }
+
+        .access-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .access-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--sata-blue);
+            margin-bottom: 10px;
+        }
+
+        .access-text {
+            color: var(--text-muted);
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        /* Header */
         .app-header {
             display: flex;
             justify-content: space-between;
@@ -144,24 +160,12 @@
             right: 0;
             height: 2px;
             background: linear-gradient(90deg, var(--sata-blue), var(--sata-green), var(--sata-blue));
-            opacity: 0.8;
-        }
-
-        .title-section {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-            flex: 1;
-            min-width: 200px;
         }
 
         .logo-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            position: relative;
         }
 
         .company-logo {
@@ -189,7 +193,6 @@
             padding: 8px 12px;
             border-radius: 12px;
             border: 1px solid var(--border-default);
-            box-shadow: var(--shadow-sm);
             flex-wrap: wrap;
             justify-content: center;
         }
@@ -263,7 +266,7 @@
         }
 
         .btn-primary:hover {
-            box-shadow: var(--shadow-glow-blue);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
             filter: brightness(1.1);
         }
 
@@ -274,7 +277,7 @@
             background: var(--toggle-bg);
             border-radius: 15px;
             cursor: pointer;
-            transition: all var(--transition-base);
+            transition: all var(--transition-fast);
             border: 2px solid var(--border-default);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
             flex-shrink: 0;
@@ -288,7 +291,7 @@
             height: 22px;
             background: var(--toggle-circle);
             border-radius: 50%;
-            transition: transform var(--transition-base);
+            transition: transform var(--transition-fast);
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             display: flex;
             align-items: center;
@@ -313,45 +316,7 @@
             opacity: 1;
         }
 
-        .app-toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding: 14px 16px;
-            background: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border-default);
-            box-shadow: var(--shadow-sm);
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .legend-bar {
-            display: flex;
-            gap: 12px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            flex-wrap: wrap;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            background: var(--bg-secondary);
-            border-radius: 20px;
-            border: 1px solid var(--border-subtle);
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 2px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
+        /* Estatísticas */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -379,7 +344,6 @@
             right: 0;
             height: 3px;
             background: linear-gradient(90deg, var(--sata-blue), var(--sata-green));
-            opacity: 0.8;
         }
 
         .stat-label {
@@ -397,10 +361,9 @@
             background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
         }
 
+        /* Tabela App */
         .app-table-container {
             background: var(--bg-card);
             border: 1px solid var(--border-default);
@@ -440,11 +403,6 @@
         .app-table th.dia-col { 
             width: 48px; 
             cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-        .app-table th.dia-col:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
         }
         .app-table th.total-col { width: 70px; }
 
@@ -511,20 +469,6 @@
             z-index: 10;
         }
 
-        .turno-select {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: inherit;
-            font-weight: 800;
-            font-size: 13px;
-            text-align: center;
-            cursor: pointer;
-            font-family: inherit;
-            padding: 4px;
-            border-radius: 6px;
-        }
-
         .t-A { color: #34d399; }
         .t-B { color: #60a5fa; }
         .t-C { color: #fbbf24; }
@@ -566,29 +510,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
-        }
-
-        .pdf-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #c8db00, #0066cc, #c8db00);
-        }
-
-        .pdf-brand {
-            display: flex;
-            flex-direction: column;
         }
 
         .pdf-brand-name {
             font-size: 28px;
             font-weight: 800;
             letter-spacing: -0.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .pdf-brand-sub {
@@ -609,7 +536,6 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 4px;
         }
 
         .pdf-date {
@@ -618,23 +544,9 @@
             color: #c8db00;
         }
 
-        .pdf-stats-header {
-            font-size: 11px;
-            opacity: 0.9;
-            margin-top: 4px;
-        }
-
         .pdf-body {
             padding: 20px 30px;
             background: #fafbfc;
-        }
-
-        .pdf-table-wrap {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #e2e8f0;
         }
 
         .pdf-table {
@@ -653,40 +565,12 @@
             border-right: 1px solid #e2e8f0;
             text-transform: uppercase;
             font-size: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        .pdf-table thead th:last-child {
-            border-right: none;
         }
 
         .pdf-table th.func-col {
             width: 18%;
             text-align: left;
             padding-left: 12px;
-            font-size: 9px;
-        }
-
-        .pdf-table th.turno-col {
-            width: 5%;
-            font-size: 10px;
-        }
-
-        .pdf-table th.dia-col {
-            width: calc(72% / 31);
-            min-width: 22px;
-            padding: 8px 2px;
-            line-height: 1.2;
-        }
-
-        .pdf-table th.dia-col.weekend {
-            background: #e2e8f0;
-            color: #64748b;
-        }
-
-        .pdf-table th.total-col {
-            width: 7%;
-            font-size: 9px;
         }
 
         .pdf-table tbody td {
@@ -698,101 +582,18 @@
             height: 32px;
         }
 
-        .pdf-table tbody td:last-child {
-            border-right: none;
-        }
-
         .pdf-table td.func-cell {
             text-align: left;
             padding-left: 12px;
             font-weight: 700;
             color: #1e293b;
             font-size: 9px;
-            border-right: 2px solid #cbd5e1;
         }
 
-        .pdf-table td.turno-cell {
-            font-weight: 800;
-            font-size: 11px;
-            border-right: 2px solid #cbd5e1;
-        }
-
-        .pdf-table td.total-cell {
-            font-weight: 800;
-            color: #0066cc;
-            font-size: 10px;
-            background: #f0f9ff;
-        }
-
-        .pdf-t-A { color: #059669; }
-        .pdf-t-B { color: #2563eb; }
-        .pdf-t-C { color: #d97706; }
-        .pdf-t-D { color: #db2777; }
-        .pdf-t-E { color: #7c3aed; }
-        .pdf-t-F { color: #dc2626; }
-        .pdf-t-G { color: #0891b2; }
-
-        .pdf-d-work { 
-            background: #dbeafe; 
-            color: #1e40af;
-            font-weight: 700;
-        }
-        .pdf-d-off { 
-            background: #f8fafc; 
-            color: #94a3b8;
-            font-weight: 500;
-        }
-        .pdf-d-vacation { 
-            background: #fef3c7; 
-            color: #92400e;
-            font-weight: 700;
-        }
-        .pdf-d-weekend {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-
-        .pdf-legend-section {
-            margin-top: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .pdf-legend-items {
-            display: flex;
-            gap: 20px;
-        }
-
-        .pdf-legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 10px;
-            color: #475569;
-            font-weight: 600;
-        }
-
-        .pdf-legend-box {
-            width: 16px;
-            height: 16px;
-            border-radius: 3px;
-            border: 1px solid #cbd5e1;
-        }
-
-        .pdf-legend-box.work { background: #dbeafe; border-color: #3b82f6; }
-        .pdf-legend-box.off { background: #f8fafc; border-color: #cbd5e1; }
-        .pdf-legend-box.vacation { background: #fef3c7; border-color: #f59e0b; }
-
-        .pdf-footer-text {
-            font-size: 9px;
-            color: #94a3b8;
-            text-align: right;
-        }
+        .pdf-d-work { background: #dbeafe; color: #1e40af; font-weight: 700; }
+        .pdf-d-off { background: #f8fafc; color: #94a3b8; }
+        .pdf-d-vacation { background: #fef3c7; color: #92400e; font-weight: 700; }
+        .pdf-d-weekend { background: #f1f5f9; color: #64748b; }
 
         /* Toast e Loading */
         .toast {
@@ -859,121 +660,25 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Modal de Compartilhamento */
-        .share-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 4000;
-            justify-content: center;
-            align-items: flex-end;
-        }
-
-        .share-modal.active {
-            display: flex;
-        }
-
-        .share-sheet {
-            background: var(--bg-card);
-            width: 100%;
-            max-width: 500px;
-            border-radius: 20px 20px 0 0;
-            padding: 20px;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-
-        .share-title {
-            text-align: center;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-default);
-        }
-
-        .share-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .share-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            padding: 15px 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-default);
-        }
-
-        .share-option:hover {
-            background: var(--bg-hover);
-            transform: scale(1.05);
-        }
-
-        .share-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-
-        .share-icon.whatsapp { background: #25d366; color: white; }
-        .share-icon.email { background: #ea4335; color: white; }
-        .share-icon.drive { background: #4285f4; color: white; }
-        .share-icon.download { background: var(--sata-blue); color: white; }
-        .share-icon.print { background: #6b7280; color: white; }
-        .share-icon.share { background: var(--sata-green); color: #1a1a1a; }
-
-        .share-label {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            text-align: center;
-        }
-
-        .share-cancel {
-            width: 100%;
-            padding: 15px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-default);
-            color: var(--text-primary);
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
         @media (max-width: 768px) {
             body { padding: 12px; }
             .app-header { padding: 12px; }
             .company-logo { height: 50px; }
-            .month-controls { order: 3; width: 100%; }
-            .controls { width: 100%; justify-content: center; }
-            .share-grid { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
+    <!-- Tela de Acesso Negado -->
+    <div id="accessDenied" class="access-denied hidden">
+        <div class="access-icon">🔒</div>
+        <div class="access-title">Limite de Dispositivos Atingido</div>
+        <div class="access-text">
+            Este sistema permite apenas <strong>2 dispositivos simultâneos</strong>. 
+            Por favor, desconecte um dos dispositivos atuais ou entre em contato com o administrador.
+        </div>
+    </div>
+
+    <!-- Loading -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="spinner"></div>
         <div style="color: white; font-size: 1rem;">Gerando PDF...</div>
@@ -982,43 +687,9 @@
     <!-- Toast -->
     <div id="toast" class="toast"></div>
 
-    <!-- Share Modal -->
-    <div id="shareModal" class="share-modal" onclick="closeShareModal(event)">
-        <div class="share-sheet" onclick="event.stopPropagation()">
-            <div class="share-title">Compartilhar Escala</div>
-            <div class="share-grid">
-                <div class="share-option" onclick="shareVia('whatsapp')">
-                    <div class="share-icon whatsapp">💬</div>
-                    <span class="share-label">WhatsApp</span>
-                </div>
-                <div class="share-option" onclick="shareVia('email')">
-                    <div class="share-icon email">✉️</div>
-                    <span class="share-label">Email</span>
-                </div>
-                <div class="share-option" onclick="shareVia('drive')">
-                    <div class="share-icon drive">📁</div>
-                    <span class="share-label">Salvar</span>
-                </div>
-                <div class="share-option" onclick="shareVia('print')">
-                    <div class="share-icon print">🖨️</div>
-                    <span class="share-label">Imprimir</span>
-                </div>
-                <div class="share-option" onclick="shareVia('download')">
-                    <div class="share-icon download">⬇️</div>
-                    <span class="share-label">Baixar</span>
-                </div>
-                <div class="share-option" onclick="shareVia('system')">
-                    <div class="share-icon share">📤</div>
-                    <span class="share-label">Outros</span>
-                </div>
-            </div>
-            <button class="share-cancel" onclick="closeShareModal()">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- ===== INTERFACE DO APP ===== -->
-    <div class="app-header">
-        <div class="title-section">
+    <!-- Interface Principal -->
+    <div id="mainInterface">
+        <div class="app-header">
             <div class="logo-container">
                 <img src="sata.png" alt="SATA Security" class="company-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                 <div style="display: none; flex-direction: column; align-items: center; color: var(--sata-blue); font-size: 2rem; font-weight: 800;">
@@ -1027,126 +698,203 @@
                 </div>
                 <span class="company-subtitle">Escala de Trabalho</span>
             </div>
-        </div>
-        
-        <div class="month-controls">
-            <button onclick="changeMonth(-1)">◀</button>
-            <select id="monthSelect" onchange="updateMonth()">
-                <option value="0">Janeiro</option>
-                <option value="1">Fevereiro</option>
-                <option value="2" selected>Março</option>
-                <option value="3">Abril</option>
-                <option value="4">Maio</option>
-                <option value="5">Junho</option>
-                <option value="6">Julho</option>
-                <option value="7">Agosto</option>
-                <option value="8">Setembro</option>
-                <option value="9">Outubro</option>
-                <option value="10">Novembro</option>
-                <option value="11">Dezembro</option>
-            </select>
-            <input type="number" id="yearInput" value="2026" min="2020" max="2030" style="width: 70px;" onchange="updateMonth()">
-            <button onclick="changeMonth(1)">▶</button>
-        </div>
-        
-        <div class="controls">
-            <div class="theme-toggle" onclick="toggleTheme()">
-                <div class="theme-toggle-circle">
-                    <span class="theme-icon theme-icon-moon">🌙</span>
-                    <span class="theme-icon theme-icon-sun">☀️</span>
-                </div>
+            
+            <div class="month-controls">
+                <button onclick="changeMonth(-1)">◀</button>
+                <select id="monthSelect" onchange="updateMonth()">
+                    <option value="0">Janeiro</option>
+                    <option value="1">Fevereiro</option>
+                    <option value="2" selected>Março</option>
+                    <option value="3">Abril</option>
+                    <option value="4">Maio</option>
+                    <option value="5">Junho</option>
+                    <option value="6">Julho</option>
+                    <option value="7">Agosto</option>
+                    <option value="8">Setembro</option>
+                    <option value="9">Outubro</option>
+                    <option value="10">Novembro</option>
+                    <option value="11">Dezembro</option>
+                </select>
+                <input type="number" id="yearInput" value="2026" min="2020" max="2030" style="width: 70px;" onchange="updateMonth()">
+                <button onclick="changeMonth(1)">▶</button>
             </div>
-            <button class="btn btn-primary" onclick="prepararCompartilhamento()">📤 Compartilhar</button>
+            
+            <div class="controls">
+                <div class="theme-toggle" onclick="toggleTheme()">
+                    <div class="theme-toggle-circle">
+                        <span class="theme-icon theme-icon-moon">🌙</span>
+                        <span class="theme-icon theme-icon-sun">☀️</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="baixarPDF()">⬇️ Baixar PDF</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Funcionários</div>
+                <div class="stat-value" id="statFunc">11</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Dias no Mês</div>
+                <div class="stat-value" id="statDiasMes">31</div>
+            </div>
+        </div>
+
+        <div class="app-table-container">
+            <table class="app-table" id="appTable">
+                <thead id="appTableHead"></thead>
+                <tbody id="appTableBody"></tbody>
+            </table>
         </div>
     </div>
 
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-label">Funcionários</div>
-            <div class="stat-value" id="statFunc">11</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-label">Dias no Mês</div>
-            <div class="stat-value" id="statDiasMes">31</div>
-        </div>
-    </div>
-
-    <div class="app-toolbar">
-        <div class="legend-bar">
-            <div class="legend-item"><div class="dot" style="background: var(--work-primary);"></div> Trabalho</div>
-            <div class="legend-item"><div class="dot" style="background: var(--off-primary);"></div> Folga (F)</div>
-            <div class="legend-item"><div class="dot" style="background: var(--vacation-primary);"></div> Férias (FE)</div>
-        </div>
-    </div>
-
-    <div class="app-table-container">
-        <table class="app-table" id="appTable">
-            <thead id="appTableHead"></thead>
-            <tbody id="appTableBody"></tbody>
-        </table>
-    </div>
-
-    <!-- ===== PDF CONTAINER (renderizado fora da tela) ===== -->
+    <!-- PDF Container (off-screen) -->
     <div class="pdf-container" id="pdfContainer">
         <div class="pdf-header">
-            <div class="pdf-brand">
+            <div>
                 <div class="pdf-brand-name">SATA Security</div>
                 <div class="pdf-brand-sub">Escala de Trabalho</div>
             </div>
             <div class="pdf-meta">
                 <div class="pdf-title">Escala Mensal</div>
                 <div class="pdf-date" id="pdfDateDisplay">Março 2026</div>
-                <div class="pdf-stats-header" id="pdfStatsDisplay">11 funcionários • 31 dias</div>
             </div>
         </div>
-        
         <div class="pdf-body">
-            <div class="pdf-table-wrap">
-                <table class="pdf-table" id="pdfTable">
-                    <thead id="pdfTableHead"></thead>
-                    <tbody id="pdfTableBody"></tbody>
-                </table>
-            </div>
-            
-            <div class="pdf-legend-section">
-                <div class="pdf-legend-items">
-                    <div class="pdf-legend-item">
-                        <div class="pdf-legend-box work"></div>
-                        <span>Trabalho (horas/dia)</span>
-                    </div>
-                    <div class="pdf-legend-item">
-                        <div class="pdf-legend-box off"></div>
-                        <span>Folga (F)</span>
-                    </div>
-                    <div class="pdf-legend-item">
-                        <div class="pdf-legend-box vacation"></div>
-                        <span>Férias (FE)</span>
-                    </div>
-                </div>
-                <div class="pdf-footer-text">
-                    Gerado em: <span id="pdfGeneratedDate"></span> • SATA Security
-                </div>
-            </div>
+            <table class="pdf-table" id="pdfTable">
+                <thead id="pdfTableHead"></thead>
+                <tbody id="pdfTableBody"></tbody>
+            </table>
         </div>
     </div>
 
     <script>
-        // ===== VARIÁVEIS GLOBAIS =====
-        let pdfBlobGlobal = null;
-        let pdfFileNameGlobal = '';
-
-        // Tema
-        const savedTheme = localStorage.getItem('sata-theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('sata-theme', next);
+        // ===== SISTEMA DE CONTROLE DE ACESSO (2 DISPOSITIVOS) =====
+        const MAX_DEVICES = 2;
+        const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 horas em ms
+        
+        // Gerar fingerprint único do dispositivo
+        function generateDeviceId() {
+            const nav = navigator;
+            const screen = window.screen;
+            const date = new Date();
+            
+            // Coletar características do dispositivo
+            const components = [
+                nav.userAgent,
+                nav.language,
+                nav.platform,
+                screen.width + 'x' + screen.height,
+                screen.colorDepth,
+                date.getTimezoneOffset(),
+                nav.hardwareConcurrency || 'unknown',
+                nav.deviceMemory || 'unknown',
+                'sata-v1' // versão para invalidar IDs antigos
+            ];
+            
+            // Criar hash simples
+            let hash = 0;
+            const str = components.join('|');
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            
+            return 'sata_' + Math.abs(hash).toString(16);
         }
 
-        // Dados
+        // Verificar e gerenciar acesso
+        function checkDeviceAccess() {
+            const currentDeviceId = generateDeviceId();
+            const now = Date.now();
+            
+            // Carregar dispositivos registrados
+            let devices = JSON.parse(localStorage.getItem('sata_devices') || '[]');
+            
+            // Limpar sessões expiradas (mais de 24h inativas)
+            devices = devices.filter(d => (now - d.lastAccess) < SESSION_DURATION);
+            
+            // Verificar se este dispositivo já está registrado
+            const existingIndex = devices.findIndex(d => d.id === currentDeviceId);
+            
+            if (existingIndex !== -1) {
+                // Dispositivo conhecido - atualizar último acesso
+                devices[existingIndex].lastAccess = now;
+                devices[existingIndex].accessCount = (devices[existingIndex].accessCount || 0) + 1;
+            } else {
+                // Novo dispositivo - verificar limite
+                if (devices.length >= MAX_DEVICES) {
+                    // Limite atingido - bloquear
+                    document.getElementById('accessDenied').classList.remove('hidden');
+                    document.getElementById('mainInterface').style.display = 'none';
+                    
+                    // Registrar tentativa bloqueada para o painel admin
+                    logBlockedAccess(currentDeviceId);
+                    return false;
+                }
+                
+                // Adicionar novo dispositivo
+                devices.push({
+                    id: currentDeviceId,
+                    firstAccess: now,
+                    lastAccess: now,
+                    accessCount: 1,
+                    userAgent: navigator.userAgent.substring(0, 100)
+                });
+            }
+            
+            // Salvar lista atualizada
+            localStorage.setItem('sata_devices', JSON.stringify(devices));
+            
+            // Registrar acesso atual para o painel admin
+            logAccess(currentDeviceId);
+            
+            return true;
+        }
+
+        // Registrar acesso no histórico (para painel admin)
+        function logAccess(deviceId) {
+            const now = new Date().toISOString();
+            const accessLog = JSON.parse(localStorage.getItem('sata_access_log') || '[]');
+            
+            // Limitar histórico aos últimos 100 acessos
+            if (accessLog.length > 100) {
+                accessLog.shift();
+            }
+            
+            accessLog.push({
+                deviceId: deviceId,
+                timestamp: now,
+                type: 'access',
+                ip: 'local' // Será atualizado pelo painel admin se necessário
+            });
+            
+            localStorage.setItem('sata_access_log', JSON.stringify(accessLog));
+            localStorage.setItem('sata_last_access', now);
+        }
+
+        // Registrar tentativa bloqueada
+        function logBlockedAccess(deviceId) {
+            const now = new Date().toISOString();
+            const blockedLog = JSON.parse(localStorage.getItem('sata_blocked_log') || '[]');
+            
+            if (blockedLog.length > 50) {
+                blockedLog.shift();
+            }
+            
+            blockedLog.push({
+                deviceId: deviceId,
+                timestamp: now,
+                userAgent: navigator.userAgent.substring(0, 100),
+                reason: 'max_devices'
+            });
+            
+            localStorage.setItem('sata_blocked_log', JSON.stringify(blockedLog));
+        }
+
+        // ===== DADOS DO SISTEMA =====
         let currentMonth = 2;
         let currentYear = 2026;
         let numDays = 31;
@@ -1154,11 +902,6 @@
         const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
                            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
         
-        const turnoCores = {
-            'A': '#059669', 'B': '#2563eb', 'C': '#d97706',
-            'D': '#db2777', 'E': '#7c3aed', 'F': '#dc2626', 'G': '#0891b2'
-        };
-
         let funcionarios = [
             { id: 1, nome: "Ana Daria F. Sarmento", mat: "8143", turno: "D", dias: ["F","F","8","8","8","5","F","F","F","8","8","F","8","F","6","F","8","8","F","8","8","6","F","8","8","F","8","F","F","F","17"] },
             { id: 2, nome: "Brenda M. Oliveira", mat: "4215", turno: "C", dias: ["F","14","14","14","14","14","F","F","14","14","14","14","14","F","F","0","14","14","14","14","F","F","14","14","14","14","14","F","F","14","14"] },
@@ -1205,24 +948,9 @@
             if (v === 'FE') return 'FE';
             if (v === 'F') return 'F';
             if (/^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(v)) return v;
-            if (/^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(v)) return v;
             const n = parseInt(v);
             if (!isNaN(n) && n >= 0 && n <= 24) return n.toString();
             return null;
-        }
-
-        function getCellClass(v) {
-            if (v === 'F' || v === '0' || v === '') return 'd-off';
-            if (v === 'FE') return 'd-vacation';
-            if (!isNaN(parseInt(v)) && parseInt(v) > 0) return 'd-work';
-            return 'd-off';
-        }
-
-        function getPdfCellClass(v, isWeekend) {
-            if (v === 'F' || v === '0' || v === '') return isWeekend ? 'pdf-d-weekend' : 'pdf-d-off';
-            if (v === 'FE') return 'pdf-d-vacation';
-            if (!isNaN(parseInt(v)) && parseInt(v) > 0) return 'pdf-d-work';
-            return isWeekend ? 'pdf-d-weekend' : 'pdf-d-off';
         }
 
         // ===== RENDERIZAÇÃO =====
@@ -1256,7 +984,7 @@
             let h = `<tr><th class="name-col">Funcionário</th><th class="turno-col">T</th>`;
             for (let i = 1; i <= numDays; i++) {
                 const wk = isWeekend(i, currentMonth, currentYear);
-                h += `<th class="dia-col ${wk ? 'weekend-header' : ''}" onclick="fillCol(${i})">${i}<br><small>${getDayName(i, currentMonth, currentYear)}</small></th>`;
+                h += `<th class="dia-col ${wk ? 'weekend-header' : ''}">${i}<br><small>${getDayName(i, currentMonth, currentYear)}</small></th>`;
             }
             h += `<th class="total-col">Total</th></tr>`;
             document.getElementById('appTableHead').innerHTML = h;
@@ -1266,11 +994,14 @@
                 const cells = f.dias.map((d, i) => {
                     const n = parseInt(d);
                     if (!isNaN(n) && n > 0 && n < 24) tot++;
-                    return `<td class="editable-cell ${getCellClass(d)}" contenteditable onblur="updCell(${idx},${i},this)" onkeydown="keyNav(event,${idx},${i})">${d}</td>`;
+                    let cls = 'd-off';
+                    if (d === 'FE') cls = 'd-vacation';
+                    else if (!isNaN(n) && n > 0) cls = 'd-work';
+                    return `<td class="editable-cell ${cls}" contenteditable onblur="updCell(${idx},${i},this)">${d}</td>`;
                 }).join('');
                 
                 return `<tr>
-                    <td class="name-cell"><input value="${f.nome}" onchange="updName(${idx},this.value)"></td>
+                    <td class="name-cell"><input value="${f.nome}" onchange="f.nome=this.value;renderPDF()"></td>
                     <td class="turno-cell t-${f.turno}">${f.turno}</td>
                     ${cells}
                     <td class="total-cell">${tot}d</td>
@@ -1284,14 +1015,11 @@
 
         function renderPDF() {
             document.getElementById('pdfDateDisplay').textContent = `${monthNames[currentMonth]} ${currentYear}`;
-            document.getElementById('pdfStatsDisplay').textContent = `${funcionarios.length} funcionários • ${numDays} dias`;
-            document.getElementById('pdfGeneratedDate').textContent = new Date().toLocaleString('pt-BR');
-
+            
             let h = `<tr><th class="func-col">FUNCIONÁRIO</th><th class="turno-col">T</th>`;
             for (let i = 1; i <= numDays; i++) {
                 const wk = isWeekend(i, currentMonth, currentYear);
-                const dn = getDayName(i, currentMonth, currentYear);
-                h += `<th class="dia-col ${wk ? 'weekend' : ''}">${i}<br>${dn}</th>`;
+                h += `<th class="dia-col ${wk ? 'weekend' : ''}">${i}<br>${getDayName(i, currentMonth, currentYear)}</th>`;
             }
             h += `<th class="total-col">TOT</th></tr>`;
             document.getElementById('pdfTableHead').innerHTML = h;
@@ -1302,12 +1030,15 @@
                     const n = parseInt(d);
                     if (!isNaN(n) && n > 0 && n < 24) tot++;
                     const wk = isWeekend(i + 1, currentMonth, currentYear);
-                    return `<td class="${getPdfCellClass(d, wk)}">${d}</td>`;
+                    let cls = wk ? 'pdf-d-weekend' : 'pdf-d-off';
+                    if (d === 'FE') cls = 'pdf-d-vacation';
+                    else if (!isNaN(n) && n > 0) cls = 'pdf-d-work';
+                    return `<td class="${cls}">${d}</td>`;
                 }).join('');
                 
                 return `<tr>
                     <td class="func-cell">${f.nome}</td>
-                    <td class="turno-cell pdf-t-${f.turno}" style="color: ${turnoCores[f.turno]}">${f.turno}</td>
+                    <td class="turno-cell" style="color: ${getTurnoColor(f.turno)}">${f.turno}</td>
                     ${cells}
                     <td class="total-cell">${tot}d</td>
                 </tr>`;
@@ -1316,259 +1047,96 @@
             document.getElementById('pdfTableBody').innerHTML = b;
         }
 
-        // ===== EDIÇÃO =====
+        function getTurnoColor(t) {
+            const cores = { 'A': '#059669', 'B': '#2563eb', 'C': '#d97706', 'D': '#db2777', 'E': '#7c3aed', 'F': '#dc2626', 'G': '#0891b2' };
+            return cores[t] || '#000';
+        }
+
         function updCell(fi, di, el) {
-            const old = funcionarios[fi].dias[di];
             const val = validarEntrada(el.innerText);
             if (val === null) {
-                el.innerText = old;
+                el.innerText = funcionarios[fi].dias[di];
                 showToast('Valor inválido', 'error');
                 return;
             }
-            if (old !== val) {
-                funcionarios[fi].dias[di] = val;
-                renderApp();
-                renderPDF();
-            }
-        }
-
-        function updName(idx, val) {
-            funcionarios[idx].nome = val;
+            funcionarios[fi].dias[di] = val;
+            renderApp();
             renderPDF();
         }
 
-        function keyNav(e, fi, di) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                e.target.blur();
-                const next = document.querySelectorAll('tbody tr')[fi]?.querySelectorAll('.editable-cell')[di + 1];
-                if (next) next.focus();
-            }
-        }
-
-        function fillCol(d) {
-            const v = prompt(`Dia ${d}: F=Folga, FE=Férias, Número=Horas`, "8");
-            if (v !== null) {
-                const val = validarEntrada(v);
-                if (val === null) {
-                    showToast('Valor inválido', 'error');
-                    return;
-                }
-                funcionarios.forEach(f => { if (d-1 < f.dias.length) f.dias[d-1] = val; });
-                renderApp();
-                renderPDF();
-                showToast('Coluna atualizada', 'success');
-            }
-        }
-
-        // ===== SISTEMA DE COMPARTILHAMENTO =====
-        
-        // 1. Preparar PDF e mostrar modal
-        async function prepararCompartilhamento() {
+        // ===== DOWNLOAD PDF =====
+        async function baixarPDF() {
             showLoading(true);
             showToast('Gerando PDF...', 'info');
 
             try {
-                // Gerar PDF em blob
-                const pdfBlob = await gerarPDFBlob();
-                pdfBlobGlobal = pdfBlob;
-                pdfFileNameGlobal = `escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`;
+                const pdfEl = document.getElementById('pdfContainer');
                 
-                // Mostrar modal de opções
-                showLoading(false);
-                document.getElementById('shareModal').classList.add('active');
+                const canvas = await html2canvas(pdfEl, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    windowWidth: 1123
+                });
+
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('l', 'mm', 'a4');
+                
+                const imgData = canvas.toDataURL('image/png');
+                const imgWidth = 297;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                const pageHeight = 210;
+                let finalWidth = imgWidth;
+                let finalHeight = imgHeight;
+                let y = 0;
+                
+                if (imgHeight > pageHeight) {
+                    finalHeight = pageHeight;
+                    finalWidth = (canvas.width * finalHeight) / canvas.height;
+                } else {
+                    y = (pageHeight - imgHeight) / 2;
+                }
+                
+                const x = (297 - finalWidth) / 2;
+                pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+
+                // Nome do arquivo
+                const fileName = `escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`;
+                
+                // Salvar PDF
+                pdf.save(fileName);
+                
+                showToast('PDF baixado com sucesso!', 'success');
                 
             } catch (err) {
                 console.error('Erro:', err);
                 showToast('Erro ao gerar PDF: ' + err.message, 'error');
-                showLoading(false);
-            }
-        }
-
-        // 2. Gerar PDF como Blob
-        async function gerarPDFBlob() {
-            const pdfEl = document.getElementById('pdfContainer');
-            
-            const canvas = await html2canvas(pdfEl, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                logging: false,
-                windowWidth: 1123
-            });
-
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('l', 'mm', 'a4');
-            
-            const imgData = canvas.toDataURL('image/png');
-            const imgWidth = 297;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            
-            const pageHeight = 210;
-            let finalWidth = imgWidth;
-            let finalHeight = imgHeight;
-            let y = 0;
-            
-            if (imgHeight > pageHeight) {
-                finalHeight = pageHeight;
-                finalWidth = (canvas.width * finalHeight) / canvas.height;
-                y = 0;
-            } else {
-                y = (pageHeight - imgHeight) / 2;
-            }
-            
-            const x = (297 - finalWidth) / 2;
-            pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
-
-            return pdf.output('blob');
-        }
-
-        // 3. Fechar modal
-        function closeShareModal(e) {
-            if (!e || e.target.id === 'shareModal') {
-                document.getElementById('shareModal').classList.remove('active');
-            }
-        }
-
-        // 4. Executar ação de compartilhamento
-        async function shareVia(metodo) {
-            closeShareModal();
-            
-            if (!pdfBlobGlobal) {
-                showToast('PDF não disponível', 'error');
-                return;
-            }
-
-            showLoading(true);
-
-            try {
-                switch(metodo) {
-                    case 'whatsapp':
-                        await shareViaWhatsApp();
-                        break;
-                    case 'email':
-                        await shareViaEmail();
-                        break;
-                    case 'drive':
-                        await saveToDevice();
-                        break;
-                    case 'print':
-                        window.print();
-                        break;
-                    case 'download':
-                        downloadPDF();
-                        break;
-                    case 'system':
-                        await shareViaSystem();
-                        break;
-                }
-            } catch (e) {
-                console.error(e);
-                // Fallback para download
-                downloadPDF();
             } finally {
                 showLoading(false);
             }
         }
 
-        // ===== MÉTODOS DE COMPARTILHAMENTO =====
+        // ===== TEMA =====
+        const savedTheme = localStorage.getItem('sata-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
 
-        // WhatsApp (via API web ou intent)
-        async function shareViaWhatsApp() {
-            // Criar texto da escala resumida
-            let texto = `*Escala SATA Security - ${monthNames[currentMonth]} ${currentYear}*\n\n`;
-            funcionarios.forEach(f => {
-                const diasTrabalho = f.dias.filter(d => !isNaN(parseInt(d)) && parseInt(d) > 0).length;
-                texto += `• ${f.nome} (${f.turno}): ${diasTrabalho} dias\n`;
-            });
-            texto += `\n_PDF completo anexo_`;
-            
-            // Codificar para URL
-            const encodedText = encodeURIComponent(texto);
-            
-            // Tentar abrir WhatsApp
-            const whatsappUrl = `whatsapp://send?text=${encodedText}`;
-            const webUrl = `https://wa.me/?text=${encodedText}`;
-            
-            // Salvar PDF para anexar depois
-            const file = new File([pdfBlobGlobal], pdfFileNameGlobal, { type: 'application/pdf' });
-            
-            // Se suportar Web Share com arquivos
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                    files: [file],
-                    title: 'Escala SATA Security',
-                    text: texto.replace(/\*/g, '') // Remove markdown para texto plano
-                });
-            } else {
-                // Abrir WhatsApp Web com texto
-                window.open(webUrl, '_blank');
-                // Download automático do PDF para usuário anexar manualmente
-                setTimeout(() => downloadPDF(), 1000);
-                showToast('Anexe o PDF manualmente no WhatsApp', 'info');
-            }
-        }
-
-        // Email
-        async function shareViaEmail() {
-            const subject = `Escala de Trabalho - SATA Security - ${monthNames[currentMonth]} ${currentYear}`;
-            const body = `Segue em anexo a escala de trabalho do mês de ${monthNames[currentMonth]} de ${currentYear}.\n\nTotal de funcionários: ${funcionarios.length}\nDias no mês: ${numDays}\n\nAtenciosamente,\nSATA Security`;
-            
-            const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
-            // Abrir cliente de email
-            window.location.href = mailtoUrl;
-            
-            // Download do PDF para anexar
-            setTimeout(() => downloadPDF(), 500);
-            showToast('Anexe o PDF no email', 'info');
-        }
-
-        // Salvar no dispositivo
-        async function saveToDevice() {
-            downloadPDF();
-            showToast('PDF salvo na pasta Downloads', 'success');
-        }
-
-        // Download direto
-        function downloadPDF() {
-            const url = URL.createObjectURL(pdfBlobGlobal);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = pdfFileNameGlobal;
-            document.body.appendChild(link);
-            link.click();
-            setTimeout(() => {
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }, 100);
-        }
-
-        // Compartilhamento nativo do sistema (Android/iOS)
-        async function shareViaSystem() {
-            const file = new File([pdfBlobGlobal], pdfFileNameGlobal, { type: 'application/pdf' });
-            
-            if (navigator.share) {
-                try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Escala SATA Security',
-                        text: `Escala de trabalho - ${monthNames[currentMonth]} ${currentYear}`
-                    });
-                    showToast('Compartilhado!', 'success');
-                } catch (e) {
-                    if (e.name !== 'AbortError') {
-                        // Usuário cancelou ou erro
-                        downloadPDF();
-                    }
-                }
-            } else {
-                downloadPDF();
-            }
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('sata-theme', next);
         }
 
         // ===== INICIALIZAÇÃO =====
         window.addEventListener('load', () => {
+            // Verificar acesso primeiro
+            if (!checkDeviceAccess()) {
+                return; // Acesso negado - não carregar sistema
+            }
+            
+            // Carregar sistema
             updateMonth();
         });
     </script>
