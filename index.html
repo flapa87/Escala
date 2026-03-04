@@ -135,6 +135,21 @@
             line-height: 1.6;
         }
 
+        .access-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border: 1px solid var(--border-default);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            max-width: 400px;
+        }
+
+        .access-info strong {
+            color: var(--sata-blue-light);
+        }
+
         /* Header */
         .app-header {
             display: flex;
@@ -676,6 +691,11 @@
             Este sistema permite apenas <strong>2 dispositivos simultâneos</strong>. 
             Por favor, desconecte um dos dispositivos atuais ou entre em contato com o administrador.
         </div>
+        <div class="access-info" id="blockedDeviceInfo">
+            <strong>Seu dispositivo:</strong><br>
+            <span id="blockedDeviceId">-</span><br>
+            <span id="blockedLocation">Localizando...</span>
+        </div>
     </div>
 
     <!-- Loading -->
@@ -774,13 +794,16 @@
         const MAX_DEVICES = 2;
         const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 horas em ms
         
+        // Cache de geolocalização
+        let cachedGeoData = null;
+        let currentDeviceId = null;
+
         // Gerar fingerprint único do dispositivo
         function generateDeviceId() {
             const nav = navigator;
             const screen = window.screen;
             const date = new Date();
             
-            // Coletar características do dispositivo
             const components = [
                 nav.userAgent,
                 nav.language,
@@ -790,10 +813,9 @@
                 date.getTimezoneOffset(),
                 nav.hardwareConcurrency || 'unknown',
                 nav.deviceMemory || 'unknown',
-                'sata-v1' // versão para invalidar IDs antigos
+                'sata-v2-geo'
             ];
             
-            // Criar hash simples
             let hash = 0;
             const str = components.join('|');
             for (let i = 0; i < str.length; i++) {
@@ -805,10 +827,54 @@
             return 'sata_' + Math.abs(hash).toString(16);
         }
 
+        // Obter informações de geolocalização via ipapi.co (gratuito)
+        async function getGeoLocation() {
+            if (cachedGeoData) return cachedGeoData;
+            
+            try {
+                const response = await fetch('https://ipapi.co/json/');
+                if (!response.ok) throw new Error('API Error');
+                const data = await response.json();
+                
+                cachedGeoData = {
+                    ip: data.ip,
+                    city: data.city,
+                    region: data.region,
+                    country: data.country_name,
+                    countryCode: data.country_code,
+                    lat: data.latitude,
+                    lon: data.longitude,
+                    org: data.org,
+                    timezone: data.timezone,
+                    asn: data.asn,
+                    postal: data.postal
+                };
+                
+                return cachedGeoData;
+            } catch (e) {
+                console.error('Erro geolocalização:', e);
+                return {
+                    ip: 'unknown',
+                    city: 'Desconhecida',
+                    region: '',
+                    country: 'Desconhecido',
+                    countryCode: 'XX',
+                    lat: null,
+                    lon: null,
+                    org: 'unknown',
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    error: true
+                };
+            }
+        }
+
         // Verificar e gerenciar acesso
-        function checkDeviceAccess() {
-            const currentDeviceId = generateDeviceId();
+        async function checkDeviceAccess() {
+            currentDeviceId = generateDeviceId();
             const now = Date.now();
+            
+            // Obter dados de geolocalização
+            const geoData = await getGeoLocation();
             
             // Carregar dispositivos registrados
             let devices = JSON.parse(localStorage.getItem('sata_devices') || '[]');
@@ -820,78 +886,154 @@
             const existingIndex = devices.findIndex(d => d.id === currentDeviceId);
             
             if (existingIndex !== -1) {
-                // Dispositivo conhecido - atualizar último acesso
+                // Dispositivo conhecido - atualizar último acesso e geolocalização
                 devices[existingIndex].lastAccess = now;
                 devices[existingIndex].accessCount = (devices[existingIndex].accessCount || 0) + 1;
+                devices[existingIndex].lastIP = geoData.ip;
+                devices[existingIndex].lastLocation = {
+                    city: geoData.city,
+                    region: geoData.region,
+                    country: geoData.country,
+                    countryCode: geoData.countryCode,
+                    lat: geoData.lat,
+                    lon: geoData.lon
+                };
+                devices[existingIndex].isp = geoData.org;
+                devices[existingIndex].timezone = geoData.timezone;
+                
+                // Salvar imediatamente
+                localStorage.setItem('sata_devices', JSON.stringify(devices));
+                
+                // Registrar acesso
+                await logAccess(currentDeviceId, geoData, false);
+                
+                return true;
             } else {
                 // Novo dispositivo - verificar limite
                 if (devices.length >= MAX_DEVICES) {
-                    // Limite atingido - bloquear
+                    // Limite atingido - bloquear e mostrar info
+                    document.getElementById('blockedDeviceId').textContent = currentDeviceId;
+                    document.getElementById('blockedLocation').innerHTML = 
+                        geoData.city !== 'Desconhecida' 
+                            ? `📍 ${geoData.city}, ${geoData.country} (${geoData.ip})`
+                            : 'Não foi possível obter localização';
+                    
                     document.getElementById('accessDenied').classList.remove('hidden');
                     document.getElementById('mainInterface').style.display = 'none';
                     
-                    // Registrar tentativa bloqueada para o painel admin
-                    logBlockedAccess(currentDeviceId);
+                    // Registrar tentativa bloqueada
+                    await logBlockedAccess(currentDeviceId, geoData);
                     return false;
                 }
                 
-                // Adicionar novo dispositivo
+                // Adicionar novo dispositivo com dados completos
                 devices.push({
                     id: currentDeviceId,
                     firstAccess: now,
                     lastAccess: now,
                     accessCount: 1,
-                    userAgent: navigator.userAgent.substring(0, 100)
+                    userAgent: navigator.userAgent.substring(0, 150),
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    screen: `${screen.width}x${screen.height}`,
+                    lastIP: geoData.ip,
+                    lastLocation: {
+                        city: geoData.city,
+                        region: geoData.region,
+                        country: geoData.country,
+                        countryCode: geoData.countryCode,
+                        lat: geoData.lat,
+                        lon: geoData.lon
+                    },
+                    isp: geoData.org,
+                    timezone: geoData.timezone,
+                    asn: geoData.asn
                 });
+                
+                // Salvar
+                localStorage.setItem('sata_devices', JSON.stringify(devices));
+                
+                // Registrar acesso inicial
+                await logAccess(currentDeviceId, geoData, false);
+                
+                return true;
             }
-            
-            // Salvar lista atualizada
-            localStorage.setItem('sata_devices', JSON.stringify(devices));
-            
-            // Registrar acesso atual para o painel admin
-            logAccess(currentDeviceId);
-            
-            return true;
         }
 
         // Registrar acesso no histórico (para painel admin)
-        function logAccess(deviceId) {
-            const now = new Date().toISOString();
+        async function logAccess(deviceId, geoData, isBlocked = false) {
             const accessLog = JSON.parse(localStorage.getItem('sata_access_log') || '[]');
             
-            // Limitar histórico aos últimos 100 acessos
+            const accessData = {
+                deviceId: deviceId,
+                timestamp: new Date().toISOString(),
+                type: isBlocked ? 'blocked' : 'access',
+                ip: geoData.ip,
+                location: geoData.city !== 'Desconhecida' ? {
+                    city: geoData.city,
+                    region: geoData.region,
+                    country: geoData.country,
+                    countryCode: geoData.countryCode,
+                    lat: geoData.lat,
+                    lon: geoData.lon
+                } : null,
+                isp: geoData.org,
+                timezone: geoData.timezone,
+                userAgent: navigator.userAgent.substring(0, 100)
+            };
+            
+            accessLog.push(accessData);
+            
+            // Manter apenas últimos 100 registros
             if (accessLog.length > 100) {
                 accessLog.shift();
             }
             
-            accessLog.push({
-                deviceId: deviceId,
-                timestamp: now,
-                type: 'access',
-                ip: 'local' // Será atualizado pelo painel admin se necessário
-            });
-            
             localStorage.setItem('sata_access_log', JSON.stringify(accessLog));
-            localStorage.setItem('sata_last_access', now);
+            localStorage.setItem('sata_last_access', new Date().toISOString());
         }
 
         // Registrar tentativa bloqueada
-        function logBlockedAccess(deviceId) {
-            const now = new Date().toISOString();
+        async function logBlockedAccess(deviceId, geoData) {
             const blockedLog = JSON.parse(localStorage.getItem('sata_blocked_log') || '[]');
+            
+            blockedLog.push({
+                deviceId: deviceId,
+                timestamp: new Date().toISOString(),
+                ip: geoData.ip,
+                location: geoData.city !== 'Desconhecida' ? {
+                    city: geoData.city,
+                    region: geoData.region,
+                    country: geoData.country,
+                    countryCode: geoData.countryCode
+                } : null,
+                isp: geoData.org,
+                userAgent: navigator.userAgent.substring(0, 150),
+                platform: navigator.platform,
+                reason: 'max_devices'
+            });
             
             if (blockedLog.length > 50) {
                 blockedLog.shift();
             }
             
-            blockedLog.push({
-                deviceId: deviceId,
-                timestamp: now,
-                userAgent: navigator.userAgent.substring(0, 100),
-                reason: 'max_devices'
-            });
-            
             localStorage.setItem('sata_blocked_log', JSON.stringify(blockedLog));
+        }
+
+        // Atualizar heartbeat do dispositivo (a cada 5 minutos)
+        function startDeviceHeartbeat() {
+            setInterval(async () => {
+                if (!currentDeviceId) return;
+                
+                const now = Date.now();
+                let devices = JSON.parse(localStorage.getItem('sata_devices') || '[]');
+                const deviceIndex = devices.findIndex(d => d.id === currentDeviceId);
+                
+                if (deviceIndex !== -1) {
+                    devices[deviceIndex].lastAccess = now;
+                    localStorage.setItem('sata_devices', JSON.stringify(devices));
+                }
+            }, 5 * 60 * 1000); // 5 minutos
         }
 
         // ===== DADOS DO SISTEMA =====
@@ -1102,10 +1244,7 @@
                 const x = (297 - finalWidth) / 2;
                 pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
 
-                // Nome do arquivo
                 const fileName = `escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`;
-                
-                // Salvar PDF
                 pdf.save(fileName);
                 
                 showToast('PDF baixado com sucesso!', 'success');
@@ -1130,11 +1269,15 @@
         }
 
         // ===== INICIALIZAÇÃO =====
-        window.addEventListener('load', () => {
-            // Verificar acesso primeiro
-            if (!checkDeviceAccess()) {
+        window.addEventListener('load', async () => {
+            // Verificar acesso primeiro (agora async)
+            const hasAccess = await checkDeviceAccess();
+            if (!hasAccess) {
                 return; // Acesso negado - não carregar sistema
             }
+            
+            // Iniciar heartbeat para manter dispositivo ativo no painel
+            startDeviceHeartbeat();
             
             // Carregar sistema
             updateMonth();
