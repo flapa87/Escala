@@ -527,6 +527,27 @@
             align-items: center;
         }
 
+        .pdf-logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .pdf-logo {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .pdf-brand-info {
+            display: flex;
+            flex-direction: column;
+        }
+
         .pdf-brand-name {
             font-size: 28px;
             font-weight: 800;
@@ -772,9 +793,12 @@
     <!-- PDF Container (off-screen) -->
     <div class="pdf-container" id="pdfContainer">
         <div class="pdf-header">
-            <div>
-                <div class="pdf-brand-name">SATA Security</div>
-                <div class="pdf-brand-sub">Escala de Trabalho</div>
+            <div class="pdf-logo-section">
+                <img src="sata.png" alt="SATA Security" class="pdf-logo" id="pdfLogo" onerror="this.style.display='none'">
+                <div class="pdf-brand-info">
+                    <div class="pdf-brand-name">SATA Security</div>
+                    <div class="pdf-brand-sub">Escala de Trabalho</div>
+                </div>
             </div>
             <div class="pdf-meta">
                 <div class="pdf-title">Escala Mensal</div>
