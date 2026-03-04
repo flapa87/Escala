@@ -120,7 +120,6 @@
             transition: background-color var(--transition-base), color var(--transition-base);
         }
 
-        /* ===== HEADER DO APP ===== */
         .app-header {
             display: flex;
             justify-content: space-between;
@@ -263,6 +262,11 @@
             box-shadow: 0 4px 6px -1px rgba(0, 102, 204, 0.3);
         }
 
+        .btn-primary:hover {
+            box-shadow: var(--shadow-glow-blue);
+            filter: brightness(1.1);
+        }
+
         .theme-toggle {
             position: relative;
             width: 56px;
@@ -309,264 +313,6 @@
             opacity: 1;
         }
 
-        /* ===== CONTAINER DO PDF - VISUAL OTIMIZADO ===== */
-        .pdf-container {
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            overflow: hidden;
-            margin: 0 auto 20px;
-            /* Tamanho A4 paisagem: 297mm x 210mm */
-            width: 297mm;
-            max-width: 100%;
-            min-height: 210mm;
-            position: relative;
-            color: #1a1a1a;
-            font-family: 'Inter', Arial, sans-serif;
-        }
-
-        /* Header do PDF */
-        .pdf-header {
-            background: linear-gradient(135deg, #0066cc 0%, #004d99 100%);
-            color: white;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-        }
-
-        .pdf-header::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #c8db00, #0066cc, #c8db00);
-        }
-
-        .pdf-brand {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .pdf-brand-name {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .pdf-brand-sub {
-            font-size: 12px;
-            color: #c8db00;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            font-weight: 700;
-            margin-top: 4px;
-        }
-
-        .pdf-meta {
-            text-align: right;
-        }
-
-        .pdf-title {
-            font-size: 18px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 4px;
-        }
-
-        .pdf-date {
-            font-size: 24px;
-            font-weight: 800;
-            color: #c8db00;
-        }
-
-        .pdf-stats-header {
-            font-size: 11px;
-            opacity: 0.9;
-            margin-top: 4px;
-        }
-
-        /* Corpo do PDF */
-        .pdf-body {
-            padding: 20px 30px;
-            background: #fafbfc;
-        }
-
-        /* Tabela otimizada para leitura */
-        .pdf-table-wrap {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #e2e8f0;
-        }
-
-        .pdf-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 9px;
-        }
-
-        .pdf-table thead th {
-            background: #f1f5f9;
-            color: #475569;
-            font-weight: 700;
-            padding: 10px 4px;
-            text-align: center;
-            border-bottom: 2px solid #cbd5e1;
-            border-right: 1px solid #e2e8f0;
-            text-transform: uppercase;
-            font-size: 8px;
-            letter-spacing: 0.5px;
-        }
-
-        .pdf-table thead th:last-child {
-            border-right: none;
-        }
-
-        .pdf-table th.func-col {
-            width: 18%;
-            text-align: left;
-            padding-left: 12px;
-            font-size: 9px;
-        }
-
-        .pdf-table th.turno-col {
-            width: 5%;
-            font-size: 10px;
-        }
-
-        .pdf-table th.dia-col {
-            width: calc(72% / 31);
-            min-width: 22px;
-            padding: 8px 2px;
-            line-height: 1.2;
-        }
-
-        .pdf-table th.dia-col.weekend {
-            background: #e2e8f0;
-            color: #64748b;
-        }
-
-        .pdf-table th.total-col {
-            width: 7%;
-            font-size: 9px;
-        }
-
-        .pdf-table tbody td {
-            padding: 8px 4px;
-            text-align: center;
-            border-bottom: 1px solid #e2e8f0;
-            border-right: 1px solid #f1f5f9;
-            font-weight: 600;
-            height: 32px;
-        }
-
-        .pdf-table tbody td:last-child {
-            border-right: none;
-        }
-
-        .pdf-table td.func-cell {
-            text-align: left;
-            padding-left: 12px;
-            font-weight: 700;
-            color: #1e293b;
-            font-size: 9px;
-            border-right: 2px solid #cbd5e1;
-        }
-
-        .pdf-table td.turno-cell {
-            font-weight: 800;
-            font-size: 11px;
-            border-right: 2px solid #cbd5e1;
-        }
-
-        .pdf-table td.total-cell {
-            font-weight: 800;
-            color: #0066cc;
-            font-size: 10px;
-            background: #f0f9ff;
-        }
-
-        /* Cores dos turnos no PDF */
-        .pdf-t-A { color: #059669; }
-        .pdf-t-B { color: #2563eb; }
-        .pdf-t-C { color: #d97706; }
-        .pdf-t-D { color: #db2777; }
-        .pdf-t-E { color: #7c3aed; }
-        .pdf-t-F { color: #dc2626; }
-        .pdf-t-G { color: #0891b2; }
-
-        /* Cores dos dias no PDF */
-        .pdf-d-work { 
-            background: #dbeafe; 
-            color: #1e40af;
-            font-weight: 700;
-        }
-        .pdf-d-off { 
-            background: #f8fafc; 
-            color: #94a3b8;
-            font-weight: 500;
-        }
-        .pdf-d-vacation { 
-            background: #fef3c7; 
-            color: #92400e;
-            font-weight: 700;
-        }
-        .pdf-d-weekend {
-            background: #f1f5f9;
-            color: #64748b;
-        }
-
-        /* Legenda no PDF */
-        .pdf-legend-section {
-            margin-top: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 16px;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .pdf-legend-items {
-            display: flex;
-            gap: 20px;
-        }
-
-        .pdf-legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 10px;
-            color: #475569;
-            font-weight: 600;
-        }
-
-        .pdf-legend-box {
-            width: 16px;
-            height: 16px;
-            border-radius: 3px;
-            border: 1px solid #cbd5e1;
-        }
-
-        .pdf-legend-box.work { background: #dbeafe; border-color: #3b82f6; }
-        .pdf-legend-box.off { background: #f8fafc; border-color: #cbd5e1; }
-        .pdf-legend-box.vacation { background: #fef3c7; border-color: #f59e0b; }
-
-        .pdf-footer-text {
-            font-size: 9px;
-            color: #94a3b8;
-            text-align: right;
-        }
-
-        /* ===== INTERFACE DO APP ===== */
         .app-toolbar {
             display: flex;
             justify-content: space-between;
@@ -655,7 +401,6 @@
             line-height: 1;
         }
 
-        /* Tabela do App */
         .app-table-container {
             background: var(--bg-card);
             border: 1px solid var(--border-default);
@@ -803,6 +548,252 @@
             font-weight: 700;
         }
 
+        /* PDF Container (off-screen) */
+        .pdf-container {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 297mm;
+            background: #ffffff;
+            color: #1a1a1a;
+            font-family: 'Inter', Arial, sans-serif;
+        }
+
+        .pdf-header {
+            background: linear-gradient(135deg, #0066cc 0%, #004d99 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .pdf-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c8db00, #0066cc, #c8db00);
+        }
+
+        .pdf-brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pdf-brand-name {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .pdf-brand-sub {
+            font-size: 12px;
+            color: #c8db00;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .pdf-meta {
+            text-align: right;
+        }
+
+        .pdf-title {
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .pdf-date {
+            font-size: 24px;
+            font-weight: 800;
+            color: #c8db00;
+        }
+
+        .pdf-stats-header {
+            font-size: 11px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .pdf-body {
+            padding: 20px 30px;
+            background: #fafbfc;
+        }
+
+        .pdf-table-wrap {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+        }
+
+        .pdf-table thead th {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+            padding: 10px 4px;
+            text-align: center;
+            border-bottom: 2px solid #cbd5e1;
+            border-right: 1px solid #e2e8f0;
+            text-transform: uppercase;
+            font-size: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .pdf-table thead th:last-child {
+            border-right: none;
+        }
+
+        .pdf-table th.func-col {
+            width: 18%;
+            text-align: left;
+            padding-left: 12px;
+            font-size: 9px;
+        }
+
+        .pdf-table th.turno-col {
+            width: 5%;
+            font-size: 10px;
+        }
+
+        .pdf-table th.dia-col {
+            width: calc(72% / 31);
+            min-width: 22px;
+            padding: 8px 2px;
+            line-height: 1.2;
+        }
+
+        .pdf-table th.dia-col.weekend {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+
+        .pdf-table th.total-col {
+            width: 7%;
+            font-size: 9px;
+        }
+
+        .pdf-table tbody td {
+            padding: 8px 4px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #f1f5f9;
+            font-weight: 600;
+            height: 32px;
+        }
+
+        .pdf-table tbody td:last-child {
+            border-right: none;
+        }
+
+        .pdf-table td.func-cell {
+            text-align: left;
+            padding-left: 12px;
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 9px;
+            border-right: 2px solid #cbd5e1;
+        }
+
+        .pdf-table td.turno-cell {
+            font-weight: 800;
+            font-size: 11px;
+            border-right: 2px solid #cbd5e1;
+        }
+
+        .pdf-table td.total-cell {
+            font-weight: 800;
+            color: #0066cc;
+            font-size: 10px;
+            background: #f0f9ff;
+        }
+
+        .pdf-t-A { color: #059669; }
+        .pdf-t-B { color: #2563eb; }
+        .pdf-t-C { color: #d97706; }
+        .pdf-t-D { color: #db2777; }
+        .pdf-t-E { color: #7c3aed; }
+        .pdf-t-F { color: #dc2626; }
+        .pdf-t-G { color: #0891b2; }
+
+        .pdf-d-work { 
+            background: #dbeafe; 
+            color: #1e40af;
+            font-weight: 700;
+        }
+        .pdf-d-off { 
+            background: #f8fafc; 
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        .pdf-d-vacation { 
+            background: #fef3c7; 
+            color: #92400e;
+            font-weight: 700;
+        }
+        .pdf-d-weekend {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .pdf-legend-section {
+            margin-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .pdf-legend-items {
+            display: flex;
+            gap: 20px;
+        }
+
+        .pdf-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .pdf-legend-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .pdf-legend-box.work { background: #dbeafe; border-color: #3b82f6; }
+        .pdf-legend-box.off { background: #f8fafc; border-color: #cbd5e1; }
+        .pdf-legend-box.vacation { background: #fef3c7; border-color: #f59e0b; }
+
+        .pdf-footer-text {
+            font-size: 9px;
+            color: #94a3b8;
+            text-align: right;
+        }
+
         /* Toast e Loading */
         .toast {
             position: fixed;
@@ -829,6 +820,11 @@
         .toast.success {
             border-color: var(--sata-green);
             background: rgba(200, 219, 0, 0.1);
+        }
+
+        .toast.error {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
         }
 
         .loading-overlay {
@@ -863,30 +859,116 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Modal de Compartilhamento */
+        .share-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 4000;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .share-modal.active {
+            display: flex;
+        }
+
+        .share-sheet {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .share-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-default);
+        }
+
+        .share-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 15px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-default);
+        }
+
+        .share-option:hover {
+            background: var(--bg-hover);
+            transform: scale(1.05);
+        }
+
+        .share-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .share-icon.whatsapp { background: #25d366; color: white; }
+        .share-icon.email { background: #ea4335; color: white; }
+        .share-icon.drive { background: #4285f4; color: white; }
+        .share-icon.download { background: var(--sata-blue); color: white; }
+        .share-icon.print { background: #6b7280; color: white; }
+        .share-icon.share { background: var(--sata-green); color: #1a1a1a; }
+
+        .share-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .share-cancel {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-default);
+            color: var(--text-primary);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
         @media (max-width: 768px) {
             body { padding: 12px; }
             .app-header { padding: 12px; }
             .company-logo { height: 50px; }
             .month-controls { order: 3; width: 100%; }
             .controls { width: 100%; justify-content: center; }
-            .pdf-container { transform: scale(0.5); transform-origin: top center; }
-        }
-
-        @media print {
-            body { background: white !important; padding: 0; margin: 0; }
-            .app-header, .app-toolbar, .stats-grid, .app-table-container, .toast, .loading-overlay { 
-                display: none !important; 
-            }
-            .pdf-container {
-                display: block !important;
-                width: 297mm !important;
-                max-width: none !important;
-                margin: 0 !important;
-                box-shadow: none !important;
-                border-radius: 0 !important;
-                page-break-inside: avoid;
-                transform: none !important;
-            }
+            .share-grid { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>
@@ -899,6 +981,40 @@
 
     <!-- Toast -->
     <div id="toast" class="toast"></div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="share-modal" onclick="closeShareModal(event)">
+        <div class="share-sheet" onclick="event.stopPropagation()">
+            <div class="share-title">Compartilhar Escala</div>
+            <div class="share-grid">
+                <div class="share-option" onclick="shareVia('whatsapp')">
+                    <div class="share-icon whatsapp">💬</div>
+                    <span class="share-label">WhatsApp</span>
+                </div>
+                <div class="share-option" onclick="shareVia('email')">
+                    <div class="share-icon email">✉️</div>
+                    <span class="share-label">Email</span>
+                </div>
+                <div class="share-option" onclick="shareVia('drive')">
+                    <div class="share-icon drive">📁</div>
+                    <span class="share-label">Salvar</span>
+                </div>
+                <div class="share-option" onclick="shareVia('print')">
+                    <div class="share-icon print">🖨️</div>
+                    <span class="share-label">Imprimir</span>
+                </div>
+                <div class="share-option" onclick="shareVia('download')">
+                    <div class="share-icon download">⬇️</div>
+                    <span class="share-label">Baixar</span>
+                </div>
+                <div class="share-option" onclick="shareVia('system')">
+                    <div class="share-icon share">📤</div>
+                    <span class="share-label">Outros</span>
+                </div>
+            </div>
+            <button class="share-cancel" onclick="closeShareModal()">Cancelar</button>
+        </div>
+    </div>
 
     <!-- ===== INTERFACE DO APP ===== -->
     <div class="app-header">
@@ -940,7 +1056,7 @@
                     <span class="theme-icon theme-icon-sun">☀️</span>
                 </div>
             </div>
-            <button class="btn btn-primary" onclick="gerarPDF()">📄 Exportar PDF</button>
+            <button class="btn btn-primary" onclick="prepararCompartilhamento()">📤 Compartilhar</button>
         </div>
     </div>
 
@@ -970,8 +1086,8 @@
         </table>
     </div>
 
-    <!-- ===== PDF OTIMIZADO (inicialmente oculto) ===== -->
-    <div class="pdf-container" id="pdfContainer" style="display: none;">
+    <!-- ===== PDF CONTAINER (renderizado fora da tela) ===== -->
+    <div class="pdf-container" id="pdfContainer">
         <div class="pdf-header">
             <div class="pdf-brand">
                 <div class="pdf-brand-name">SATA Security</div>
@@ -1015,6 +1131,10 @@
     </div>
 
     <script>
+        // ===== VARIÁVEIS GLOBAIS =====
+        let pdfBlobGlobal = null;
+        let pdfFileNameGlobal = '';
+
         // Tema
         const savedTheme = localStorage.getItem('sata-theme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
@@ -1053,7 +1173,7 @@
             { id: 11, nome: "Fabricio J. Aguiar", mat: "4156", turno: "G", dias: ["F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9"] }
         ];
 
-        // Utilitários
+        // ===== UTILITÁRIOS =====
         function showToast(msg, type = 'info') {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
@@ -1105,7 +1225,7 @@
             return isWeekend ? 'pdf-d-weekend' : 'pdf-d-off';
         }
 
-        // Renderização
+        // ===== RENDERIZAÇÃO =====
         function updateMonth() {
             currentMonth = parseInt(document.getElementById('monthSelect').value);
             currentYear = parseInt(document.getElementById('yearInput').value);
@@ -1133,7 +1253,6 @@
         }
 
         function renderApp() {
-            // Header
             let h = `<tr><th class="name-col">Funcionário</th><th class="turno-col">T</th>`;
             for (let i = 1; i <= numDays; i++) {
                 const wk = isWeekend(i, currentMonth, currentYear);
@@ -1142,7 +1261,6 @@
             h += `<th class="total-col">Total</th></tr>`;
             document.getElementById('appTableHead').innerHTML = h;
 
-            // Body
             const b = funcionarios.map((f, idx) => {
                 let tot = 0;
                 const cells = f.dias.map((d, i) => {
@@ -1165,12 +1283,10 @@
         }
 
         function renderPDF() {
-            // Atualizar info
             document.getElementById('pdfDateDisplay').textContent = `${monthNames[currentMonth]} ${currentYear}`;
             document.getElementById('pdfStatsDisplay').textContent = `${funcionarios.length} funcionários • ${numDays} dias`;
             document.getElementById('pdfGeneratedDate').textContent = new Date().toLocaleString('pt-BR');
 
-            // Header
             let h = `<tr><th class="func-col">FUNCIONÁRIO</th><th class="turno-col">T</th>`;
             for (let i = 1; i <= numDays; i++) {
                 const wk = isWeekend(i, currentMonth, currentYear);
@@ -1180,7 +1296,6 @@
             h += `<th class="total-col">TOT</th></tr>`;
             document.getElementById('pdfTableHead').innerHTML = h;
 
-            // Body
             const b = funcionarios.map(f => {
                 let tot = 0;
                 const cells = f.dias.map((d, i) => {
@@ -1201,7 +1316,7 @@
             document.getElementById('pdfTableBody').innerHTML = b;
         }
 
-        // Edição
+        // ===== EDIÇÃO =====
         function updCell(fi, di, el) {
             const old = funcionarios[fi].dias[di];
             const val = validarEntrada(el.innerText);
@@ -1246,68 +1361,213 @@
             }
         }
 
-        // PDF Generation
-        async function gerarPDF() {
+        // ===== SISTEMA DE COMPARTILHAMENTO =====
+        
+        // 1. Preparar PDF e mostrar modal
+        async function prepararCompartilhamento() {
             showLoading(true);
-            
+            showToast('Gerando PDF...', 'info');
+
             try {
-                const pdfEl = document.getElementById('pdfContainer');
-                pdfEl.style.display = 'block';
+                // Gerar PDF em blob
+                const pdfBlob = await gerarPDFBlob();
+                pdfBlobGlobal = pdfBlob;
+                pdfFileNameGlobal = `escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`;
                 
-                const canvas = await html2canvas(pdfEl, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    logging: false,
-                    windowWidth: 1123 // 297mm em 96dpi
-                });
-                
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('l', 'mm', 'a4');
-                
-                const imgData = canvas.toDataURL('image/png');
-                const imgWidth = 297;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                // Se altura exceder A4, escalar para caber
-                const pageHeight = 210;
-                let finalWidth = imgWidth;
-                let finalHeight = imgHeight;
-                let y = 0;
-                
-                if (imgHeight > pageHeight) {
-                    finalHeight = pageHeight;
-                    finalWidth = (canvas.width * finalHeight) / canvas.height;
-                    y = 0;
-                } else {
-                    y = (pageHeight - imgHeight) / 2;
-                }
-                
-                const x = (297 - finalWidth) / 2;
-                
-                pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
-                
-                const blob = pdf.output('blob');
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                setTimeout(() => URL.revokeObjectURL(url), 1000);
-                showToast('PDF gerado!', 'success');
+                // Mostrar modal de opções
+                showLoading(false);
+                document.getElementById('shareModal').classList.add('active');
                 
             } catch (err) {
-                console.error(err);
-                showToast('Erro: ' + err.message, 'error');
+                console.error('Erro:', err);
+                showToast('Erro ao gerar PDF: ' + err.message, 'error');
+                showLoading(false);
+            }
+        }
+
+        // 2. Gerar PDF como Blob
+        async function gerarPDFBlob() {
+            const pdfEl = document.getElementById('pdfContainer');
+            
+            const canvas = await html2canvas(pdfEl, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                logging: false,
+                windowWidth: 1123
+            });
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('l', 'mm', 'a4');
+            
+            const imgData = canvas.toDataURL('image/png');
+            const imgWidth = 297;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            
+            const pageHeight = 210;
+            let finalWidth = imgWidth;
+            let finalHeight = imgHeight;
+            let y = 0;
+            
+            if (imgHeight > pageHeight) {
+                finalHeight = pageHeight;
+                finalWidth = (canvas.width * finalHeight) / canvas.height;
+                y = 0;
+            } else {
+                y = (pageHeight - imgHeight) / 2;
+            }
+            
+            const x = (297 - finalWidth) / 2;
+            pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+
+            return pdf.output('blob');
+        }
+
+        // 3. Fechar modal
+        function closeShareModal(e) {
+            if (!e || e.target.id === 'shareModal') {
+                document.getElementById('shareModal').classList.remove('active');
+            }
+        }
+
+        // 4. Executar ação de compartilhamento
+        async function shareVia(metodo) {
+            closeShareModal();
+            
+            if (!pdfBlobGlobal) {
+                showToast('PDF não disponível', 'error');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                switch(metodo) {
+                    case 'whatsapp':
+                        await shareViaWhatsApp();
+                        break;
+                    case 'email':
+                        await shareViaEmail();
+                        break;
+                    case 'drive':
+                        await saveToDevice();
+                        break;
+                    case 'print':
+                        window.print();
+                        break;
+                    case 'download':
+                        downloadPDF();
+                        break;
+                    case 'system':
+                        await shareViaSystem();
+                        break;
+                }
+            } catch (e) {
+                console.error(e);
+                // Fallback para download
+                downloadPDF();
             } finally {
                 showLoading(false);
             }
         }
 
-        // Init
+        // ===== MÉTODOS DE COMPARTILHAMENTO =====
+
+        // WhatsApp (via API web ou intent)
+        async function shareViaWhatsApp() {
+            // Criar texto da escala resumida
+            let texto = `*Escala SATA Security - ${monthNames[currentMonth]} ${currentYear}*\n\n`;
+            funcionarios.forEach(f => {
+                const diasTrabalho = f.dias.filter(d => !isNaN(parseInt(d)) && parseInt(d) > 0).length;
+                texto += `• ${f.nome} (${f.turno}): ${diasTrabalho} dias\n`;
+            });
+            texto += `\n_PDF completo anexo_`;
+            
+            // Codificar para URL
+            const encodedText = encodeURIComponent(texto);
+            
+            // Tentar abrir WhatsApp
+            const whatsappUrl = `whatsapp://send?text=${encodedText}`;
+            const webUrl = `https://wa.me/?text=${encodedText}`;
+            
+            // Salvar PDF para anexar depois
+            const file = new File([pdfBlobGlobal], pdfFileNameGlobal, { type: 'application/pdf' });
+            
+            // Se suportar Web Share com arquivos
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: 'Escala SATA Security',
+                    text: texto.replace(/\*/g, '') // Remove markdown para texto plano
+                });
+            } else {
+                // Abrir WhatsApp Web com texto
+                window.open(webUrl, '_blank');
+                // Download automático do PDF para usuário anexar manualmente
+                setTimeout(() => downloadPDF(), 1000);
+                showToast('Anexe o PDF manualmente no WhatsApp', 'info');
+            }
+        }
+
+        // Email
+        async function shareViaEmail() {
+            const subject = `Escala de Trabalho - SATA Security - ${monthNames[currentMonth]} ${currentYear}`;
+            const body = `Segue em anexo a escala de trabalho do mês de ${monthNames[currentMonth]} de ${currentYear}.\n\nTotal de funcionários: ${funcionarios.length}\nDias no mês: ${numDays}\n\nAtenciosamente,\nSATA Security`;
+            
+            const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            // Abrir cliente de email
+            window.location.href = mailtoUrl;
+            
+            // Download do PDF para anexar
+            setTimeout(() => downloadPDF(), 500);
+            showToast('Anexe o PDF no email', 'info');
+        }
+
+        // Salvar no dispositivo
+        async function saveToDevice() {
+            downloadPDF();
+            showToast('PDF salvo na pasta Downloads', 'success');
+        }
+
+        // Download direto
+        function downloadPDF() {
+            const url = URL.createObjectURL(pdfBlobGlobal);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = pdfFileNameGlobal;
+            document.body.appendChild(link);
+            link.click();
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+
+        // Compartilhamento nativo do sistema (Android/iOS)
+        async function shareViaSystem() {
+            const file = new File([pdfBlobGlobal], pdfFileNameGlobal, { type: 'application/pdf' });
+            
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Escala SATA Security',
+                        text: `Escala de trabalho - ${monthNames[currentMonth]} ${currentYear}`
+                    });
+                    showToast('Compartilhado!', 'success');
+                } catch (e) {
+                    if (e.name !== 'AbortError') {
+                        // Usuário cancelou ou erro
+                        downloadPDF();
+                    }
+                }
+            } else {
+                downloadPDF();
+            }
+        }
+
+        // ===== INICIALIZAÇÃO =====
         window.addEventListener('load', () => {
             updateMonth();
         });
