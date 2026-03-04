@@ -1129,191 +1129,249 @@
             document.getElementById('statDiasMes').textContent = numDays;
         }
 
+        // Verificar se as bibliotecas estão carregadas
+        function checkLibraries() {
+            if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+                console.error('jsPDF não carregado');
+                return false;
+            }
+            if (typeof window.jspdf.jsPDF.prototype.autoTable === 'undefined') {
+                console.error('autotable não carregado');
+                return false;
+            }
+            return true;
+        }
+
         function gerarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l', 'mm', 'a4');
+            // Verificar se estamos em um WebView/Cordova/APK
+            const isCordova = typeof cordova !== 'undefined';
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isWebView = /(WebView|wv)/i.test(navigator.userAgent) || (window.android && window.android.print);
             
-            const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-            
-            const cores = {
-                bg: isLight ? [241, 245, 249] : [11, 17, 32],
-                card: isLight ? [255, 255, 255] : [21, 30, 50],
-                border: isLight ? [226, 232, 240] : [30, 41, 59],
-                text: isLight ? [15, 23, 42] : [226, 232, 240],
-                muted: isLight ? [100, 116, 139] : [148, 163, 184],
-                work: [59, 130, 246],
-                workBg: isLight ? [219, 234, 254] : [219, 234, 254],
-                workText: isLight ? [37, 99, 235] : [37, 99, 235],
-                off: isLight ? [100, 116, 139] : [100, 116, 139],
-                offBg: isLight ? [241, 245, 249] : [241, 245, 249],
-                vacation: isLight ? [217, 119, 6] : [245, 158, 11],
-                vacationBg: isLight ? [254, 243, 199] : [254, 243, 199],
-                sataBlue: [0, 86, 179],
-                sataGreen: [196, 214, 0]
-            };
-            
-            doc.setFillColor(...cores.bg);
-            doc.rect(0, 0, 297, 210, 'F');
-            
-            doc.setFillColor(...cores.card);
-            doc.rect(10, 10, 277, 30, 'F');
-            
-            const logoBase64 = localStorage.getItem('sataLogoBase64');
-            
-            if (logoBase64) {
-                try {
-                    doc.addImage(logoBase64, 'PNG', 110, 12, 80, 20);
-                } catch(e) {
+            try {
+                // Tentar método nativo do Android primeiro (se disponível)
+                if (isWebView && window.android && window.android.print) {
+                    window.android.print(document.documentElement.outerHTML);
+                    return;
+                }
+                
+                // Verificar bibliotecas jsPDF
+                if (!checkLibraries()) {
+                    // Fallback: usar window.print() se jsPDF não estiver disponível
+                    if (confirm('Biblioteca PDF não disponível. Deseja usar a impressão do navegador?')) {
+                        window.print();
+                    }
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('l', 'mm', 'a4');
+                
+                const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                
+                const cores = {
+                    bg: isLight ? [241, 245, 249] : [11, 17, 32],
+                    card: isLight ? [255, 255, 255] : [21, 30, 50],
+                    border: isLight ? [226, 232, 240] : [30, 41, 59],
+                    text: isLight ? [15, 23, 42] : [226, 232, 240],
+                    muted: isLight ? [100, 116, 139] : [148, 163, 184],
+                    work: [59, 130, 246],
+                    workBg: isLight ? [219, 234, 254] : [219, 234, 254],
+                    workText: isLight ? [37, 99, 235] : [37, 99, 235],
+                    off: isLight ? [100, 116, 139] : [100, 116, 139],
+                    offBg: isLight ? [241, 245, 249] : [241, 245, 249],
+                    vacation: isLight ? [217, 119, 6] : [245, 158, 11],
+                    vacationBg: isLight ? [254, 243, 199] : [254, 243, 199],
+                    sataBlue: [0, 86, 179],
+                    sataGreen: [196, 214, 0]
+                };
+                
+                doc.setFillColor(...cores.bg);
+                doc.rect(0, 0, 297, 210, 'F');
+                
+                doc.setFillColor(...cores.card);
+                doc.rect(10, 10, 277, 30, 'F');
+                
+                // Tentar usar logo do localStorage ou fallback
+                const logoBase64 = localStorage.getItem('sataLogoBase64');
+                
+                if (logoBase64) {
+                    try {
+                        doc.addImage(logoBase64, 'PNG', 110, 12, 80, 20);
+                    } catch(e) {
+                        drawFallbackLogo(doc, cores);
+                    }
+                } else {
                     drawFallbackLogo(doc, cores);
                 }
-            } else {
-                drawFallbackLogo(doc, cores);
-            }
-            
-            doc.setTextColor(...cores.text);
-            doc.setFontSize(12);
-            doc.text(`${monthNames[currentMonth].toUpperCase()} ${currentYear}`, 250, 24, { align: 'right' });
-            
-            doc.setFontSize(9);
-            doc.setTextColor(...cores.muted);
-            doc.text(`${funcionarios.length} funcionários • ${numDays} dias`, 250, 29, { align: 'right' });
-            
-            doc.setTextColor(...cores.sataGreen);
-            doc.setFontSize(10);
-            doc.setFont('helvetica', 'bold');
-            doc.text('ESCALA DE TRABALHO', 148, 38, { align: 'center' });
-            
-            const headers = [['Funcionário', 'T']];
-            for (let i = 1; i <= numDays; i++) {
-                const dayName = getDayName(i, currentMonth, currentYear);
-                headers[0].push(`${i.toString().padStart(2, '0')}\n${dayName}`);
-            }
-            headers[0].push('Total');
-            
-            const body = funcionarios.map(func => {
-                const row = [func.nome, func.turno];
-                let total = 0;
                 
-                func.dias.forEach((dia, idx) => {
-                    const num = parseInt(dia);
-                    const isNumber = !isNaN(num) && num >= 0 && num <= 24 && dia.toString().match(/^\d+$/);
-                    const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(dia);
-                    const isData = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(dia);
+                doc.setTextColor(...cores.text);
+                doc.setFontSize(12);
+                doc.text(`${monthNames[currentMonth].toUpperCase()} ${currentYear}`, 250, 24, { align: 'right' });
+                
+                doc.setFontSize(9);
+                doc.setTextColor(...cores.muted);
+                doc.text(`${funcionarios.length} funcionários • ${numDays} dias`, 250, 29, { align: 'right' });
+                
+                doc.setTextColor(...cores.sataGreen);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.text('ESCALA DE TRABALHO', 148, 38, { align: 'center' });
+                
+                const headers = [['Funcionário', 'T']];
+                for (let i = 1; i <= numDays; i++) {
+                    const dayName = getDayName(i, currentMonth, currentYear);
+                    headers[0].push(`${i.toString().padStart(2, '0')}\n${dayName}`);
+                }
+                headers[0].push('Total');
+                
+                const body = funcionarios.map(func => {
+                    const row = [func.nome, func.turno];
+                    let total = 0;
                     
-                    let val = dia;
+                    func.dias.forEach((dia, idx) => {
+                        const num = parseInt(dia);
+                        const isNumber = !isNaN(num) && num >= 0 && num <= 24 && dia.toString().match(/^\d+$/);
+                        const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(dia);
+                        const isData = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(dia);
+                        
+                        let val = dia;
+                        
+                        if (dia === 'F' || dia === '0' || dia === '-' || dia === '') {
+                            val = 'F';
+                        } else if (dia === 'FE') {
+                            val = 'FE';
+                        } else if (isNumber || isHorario || isData) {
+                            if (isNumber && num > 0 && num < 24) total++;
+                        }
+                        
+                        row.push(val);
+                    });
                     
-                    if (dia === 'F' || dia === '0' || dia === '-' || dia === '') {
-                        val = 'F';
-                    } else if (dia === 'FE') {
-                        val = 'FE';
-                    } else if (isNumber || isHorario || isData) {
-                        if (isNumber && num > 0 && num < 24) total++;
-                    }
-                    
-                    row.push(val);
+                    row.push(`${total}d`);
+                    return row;
                 });
                 
-                row.push(`${total}d`);
-                return row;
-            });
-            
-            const columnStyles = {
-                0: { cellWidth: 40, halign: 'left', fontStyle: 'bold' },
-                1: { cellWidth: 8, halign: 'center', fontStyle: 'bold' }
-            };
-            
-            const dayColWidth = Math.min(10, (277 - 60) / numDays);
-            for (let i = 2; i <= numDays + 1; i++) {
-                columnStyles[i] = { cellWidth: dayColWidth, halign: 'center', fontSize: 8 };
-            }
-            columnStyles[numDays + 2] = { cellWidth: 12, halign: 'center', fontStyle: 'bold', textColor: cores.sataBlue };
-            
-            doc.autoTable({
-                head: headers,
-                body: body,
-                startY: 48,
-                theme: 'grid',
-                styles: {
-                    fontSize: 9,
-                    cellPadding: 2,
-                    lineColor: cores.border,
-                    lineWidth: 0.1,
-                    font: 'helvetica',
-                    textColor: cores.text,
-                    fillColor: cores.card
-                },
-                headStyles: {
-                    fillColor: cores.bg,
-                    textColor: cores.muted,
-                    fontSize: 8,
-                    fontStyle: 'bold',
-                    halign: 'center',
-                    valign: 'middle'
-                },
-                columnStyles: columnStyles,
-                didParseCell: function(data) {
-                    if (data.section === 'body' && data.column.index >= 2 && data.column.index < numDays + 2) {
-                        const valor = data.cell.raw;
-                        
-                        const num = parseInt(valor);
-                        const isNumber = !isNaN(num) && num >= 0 && num <= 24 && valor.toString().match(/^\d+$/);
-                        const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(valor);
-                        const isData = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(valor);
-                        
-                        if (valor === 'F' || valor === '-' || valor === '') {
-                            data.cell.styles.fillColor = cores.offBg;
-                            data.cell.styles.textColor = cores.off;
-                        } else if (valor === 'FE') {
-                            data.cell.styles.fillColor = cores.vacationBg;
-                            data.cell.styles.textColor = isLight ? [180, 83, 9] : [180, 83, 9];
-                        } else if (isNumber || isHorario || isData) {
-                            data.cell.styles.fillColor = cores.workBg;
-                            data.cell.styles.textColor = cores.workText;
+                const columnStyles = {
+                    0: { cellWidth: 40, halign: 'left', fontStyle: 'bold' },
+                    1: { cellWidth: 8, halign: 'center', fontStyle: 'bold' }
+                };
+                
+                const dayColWidth = Math.min(10, (277 - 60) / numDays);
+                for (let i = 2; i <= numDays + 1; i++) {
+                    columnStyles[i] = { cellWidth: dayColWidth, halign: 'center', fontSize: 8 };
+                }
+                columnStyles[numDays + 2] = { cellWidth: 12, halign: 'center', fontStyle: 'bold', textColor: cores.sataBlue };
+                
+                doc.autoTable({
+                    head: headers,
+                    body: body,
+                    startY: 48,
+                    theme: 'grid',
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 2,
+                        lineColor: cores.border,
+                        lineWidth: 0.1,
+                        font: 'helvetica',
+                        textColor: cores.text,
+                        fillColor: cores.card
+                    },
+                    headStyles: {
+                        fillColor: cores.bg,
+                        textColor: cores.muted,
+                        fontSize: 8,
+                        fontStyle: 'bold',
+                        halign: 'center',
+                        valign: 'middle'
+                    },
+                    columnStyles: columnStyles,
+                    didParseCell: function(data) {
+                        if (data.section === 'body' && data.column.index >= 2 && data.column.index < numDays + 2) {
+                            const valor = data.cell.raw;
+                            
+                            const num = parseInt(valor);
+                            const isNumber = !isNaN(num) && num >= 0 && num <= 24 && valor.toString().match(/^\d+$/);
+                            const isHorario = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$/.test(valor);
+                            const isData = /^([0-9]|0[0-9]|1[0-9]|2[0-9]|3[0-1])\/([0-9]|0[0-9]|1[0-2])$/.test(valor);
+                            
+                            if (valor === 'F' || valor === '-' || valor === '') {
+                                data.cell.styles.fillColor = cores.offBg;
+                                data.cell.styles.textColor = cores.off;
+                            } else if (valor === 'FE') {
+                                data.cell.styles.fillColor = cores.vacationBg;
+                                data.cell.styles.textColor = isLight ? [180, 83, 9] : [180, 83, 9];
+                            } else if (isNumber || isHorario || isData) {
+                                data.cell.styles.fillColor = cores.workBg;
+                                data.cell.styles.textColor = cores.workText;
+                            }
                         }
-                    }
-                    
-                    if (data.section === 'body' && data.column.index === 1) {
-                        const turno = data.cell.raw;
-                        const turnoColor = {
-                            'A': [52, 211, 153], 'B': [96, 165, 250], 'C': [251, 191, 36],
-                            'D': [244, 114, 182], 'E': [167, 139, 250], 'F': [248, 113, 113], 'G': [34, 211, 238]
-                        }[turno] || cores.text;
-                        data.cell.styles.textColor = turnoColor;
-                    }
-                    
-                    if (data.column.index === numDays + 2) {
-                        data.cell.styles.fillColor = isLight ? [241, 245, 249] : [15, 23, 42];
-                    }
-                },
-                margin: { left: 10, right: 10 }
-            });
-            
-            const finalY = doc.lastAutoTable.finalY + 5;
-            doc.setFillColor(...cores.card);
-            doc.rect(10, finalY, 277, 12, 'F');
-            
-            doc.setFontSize(8);
-            let x = 15;
-            
-            const legendas = [
-                { cor: cores.work, bg: cores.workBg, txt: 'Trabalho' },
-                { cor: cores.off, bg: cores.offBg, txt: 'Folga (F)' },
-                { cor: isLight ? [180, 83, 9] : [180, 83, 9], bg: cores.vacationBg, txt: 'Férias (FE)' }
-            ];
-            
-            legendas.forEach(item => {
-                doc.setFillColor(...item.bg);
-                doc.setDrawColor(...item.cor);
-                doc.rect(x, finalY + 3, 4, 4, 'FD');
-                doc.setTextColor(...item.cor);
-                doc.text(item.txt, x + 6, finalY + 6);
-                x += 40;
-            });
-            
-            doc.setTextColor(...cores.muted);
-            doc.text(`SATA Security • Gerado em: ${new Date().toLocaleString('pt-BR')}`, 200, finalY + 6);
-            
-            doc.save(`escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`);
+                        
+                        if (data.section === 'body' && data.column.index === 1) {
+                            const turno = data.cell.raw;
+                            const turnoColor = {
+                                'A': [52, 211, 153], 'B': [96, 165, 250], 'C': [251, 191, 36],
+                                'D': [244, 114, 182], 'E': [167, 139, 250], 'F': [248, 113, 113], 'G': [34, 211, 238]
+                            }[turno] || cores.text;
+                            data.cell.styles.textColor = turnoColor;
+                        }
+                        
+                        if (data.column.index === numDays + 2) {
+                            data.cell.styles.fillColor = isLight ? [241, 245, 249] : [15, 23, 42];
+                        }
+                    },
+                    margin: { left: 10, right: 10 }
+                });
+                
+                const finalY = doc.lastAutoTable.finalY + 5;
+                doc.setFillColor(...cores.card);
+                doc.rect(10, finalY, 277, 12, 'F');
+                
+                doc.setFontSize(8);
+                let x = 15;
+                
+                const legendas = [
+                    { cor: cores.work, bg: cores.workBg, txt: 'Trabalho' },
+                    { cor: cores.off, bg: cores.offBg, txt: 'Folga (F)' },
+                    { cor: isLight ? [180, 83, 9] : [180, 83, 9], bg: cores.vacationBg, txt: 'Férias (FE)' }
+                ];
+                
+                legendas.forEach(item => {
+                    doc.setFillColor(...item.bg);
+                    doc.setDrawColor(...item.cor);
+                    doc.rect(x, finalY + 3, 4, 4, 'FD');
+                    doc.setTextColor(...item.cor);
+                    doc.text(item.txt, x + 6, finalY + 6);
+                    x += 40;
+                });
+                
+                doc.setTextColor(...cores.muted);
+                doc.text(`SATA Security • Gerado em: ${new Date().toLocaleString('pt-BR')}`, 200, finalY + 6);
+                
+                // Salvar PDF
+                const fileName = `escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`;
+                
+                // Em ambientes mobile/APK, usar método específico se disponível
+                if (isCordova || isAndroid) {
+                    const pdfOutput = doc.output('datauristring');
+                    // Tentar abrir em nova aba ou download
+                    const link = document.createElement('a');
+                    link.href = pdfOutput;
+                    link.download = fileName;
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    doc.save(fileName);
+                }
+                
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                alert('Erro ao gerar PDF: ' + error.message + '\n\nTentando método alternativo...');
+                // Fallback final: imprimir página
+                window.print();
+            }
         }
 
         function drawFallbackLogo(doc, cores) {
@@ -1330,21 +1388,38 @@
 
         function carregarLogo() {
             const img = new Image();
+            img.crossOrigin = "Anonymous";
             img.src = 'sata.png';
             img.onload = function() {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0);
-                const base64 = canvas.toDataURL('image/png');
-                localStorage.setItem('sataLogoBase64', base64);
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    const base64 = canvas.toDataURL('image/png');
+                    localStorage.setItem('sataLogoBase64', base64);
+                } catch(e) {
+                    console.log('Não foi possível carregar logo:', e);
+                }
+            };
+            img.onerror = function() {
+                console.log('Logo não encontrado, usando fallback');
             };
         }
         
-        carregarLogo();
-
-        updateMonth();
+        // Aguardar carregamento das bibliotecas antes de inicializar
+        window.addEventListener('load', function() {
+            carregarLogo();
+            updateMonth();
+            
+            // Verificar se bibliotecas carregaram após 2 segundos
+            setTimeout(function() {
+                if (!checkLibraries()) {
+                    console.warn('Bibliotecas PDF não carregadas. Modo de compatibilidade ativado.');
+                }
+            }, 2000);
+        });
     </script>
 </body>
 </html>
