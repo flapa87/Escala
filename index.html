@@ -509,38 +509,43 @@
 
         /* PDF Container (off-screen) */
         .pdf-container {
-            position: absolute;
+            position: fixed;
             left: -9999px;
             top: 0;
             width: 297mm;
             background: #ffffff;
             color: #1a1a1a;
             font-family: 'Inter', Arial, sans-serif;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
         }
 
         .pdf-header {
             background: linear-gradient(135deg, #0066cc 0%, #004d99 100%);
             color: white;
-            padding: 20px 30px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 70px;
+            box-sizing: border-box;
         }
 
         .pdf-logo-section {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .pdf-logo {
-            height: 80px;
+            height: 50px;
             width: auto;
             object-fit: contain;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
             background: white;
-            padding: 8px;
-            border-radius: 8px;
+            padding: 6px;
+            border-radius: 6px;
         }
 
         .pdf-brand-info {
@@ -549,18 +554,18 @@
         }
 
         .pdf-brand-name {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 800;
             letter-spacing: -0.5px;
         }
 
         .pdf-brand-sub {
-            font-size: 12px;
+            font-size: 11px;
             color: #c8db00;
             text-transform: uppercase;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             font-weight: 700;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
         .pdf-meta {
@@ -568,62 +573,80 @@
         }
 
         .pdf-title {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
         .pdf-date {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 800;
             color: #c8db00;
         }
 
         .pdf-body {
-            padding: 20px 30px;
-            background: #fafbfc;
+            padding: 10px 15px;
+            background: #ffffff;
         }
 
         .pdf-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 9px;
+            font-size: 8px;
+            table-layout: fixed;
         }
 
         .pdf-table thead th {
             background: #f1f5f9;
             color: #475569;
             font-weight: 700;
-            padding: 10px 4px;
+            padding: 6px 2px;
             text-align: center;
             border-bottom: 2px solid #cbd5e1;
             border-right: 1px solid #e2e8f0;
             text-transform: uppercase;
-            font-size: 8px;
+            font-size: 7px;
+            height: 28px;
         }
 
         .pdf-table th.func-col {
-            width: 18%;
+            width: 22%;
             text-align: left;
-            padding-left: 12px;
+            padding-left: 8px;
+        }
+
+        .pdf-table th.turno-col {
+            width: 5%;
+        }
+
+        .pdf-table th.dia-col {
+            width: 2.3%;
+        }
+
+        .pdf-table th.total-col {
+            width: 6%;
         }
 
         .pdf-table tbody td {
-            padding: 8px 4px;
+            padding: 5px 2px;
             text-align: center;
             border-bottom: 1px solid #e2e8f0;
             border-right: 1px solid #f1f5f9;
             font-weight: 600;
-            height: 32px;
+            height: 26px;
+            font-size: 8px;
         }
 
         .pdf-table td.func-cell {
             text-align: left;
-            padding-left: 12px;
+            padding-left: 8px;
             font-weight: 700;
             color: #1e293b;
-            font-size: 9px;
+            font-size: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .pdf-d-work { background: #dbeafe; color: #1e40af; font-weight: 700; }
@@ -702,6 +725,7 @@
             .company-logo { height: 50px; }
         }
     </style>
+<base target="_blank">
 </head>
 <body>
     <!-- Tela de Acesso Negado -->
@@ -1230,48 +1254,84 @@
             renderPDF();
         }
 
-        // ===== DOWNLOAD PDF =====
+        // ===== DOWNLOAD PDF OTIMIZADO =====
         async function baixarPDF() {
             showLoading(true);
-            showToast('Gerando PDF...', 'info');
+            showToast('Gerando PDF em alta qualidade...', 'info');
 
             try {
                 const pdfEl = document.getElementById('pdfContainer');
                 
+                // Garantir que o container está visível para captura
+                const originalLeft = pdfEl.style.left;
+                pdfEl.style.position = 'absolute';
+                pdfEl.style.left = '0';
+                pdfEl.style.top = '-9999px';
+                pdfEl.style.width = '297mm';
+                
+                // Forçar renderização
+                pdfEl.offsetHeight;
+                
+                // Aguardar carregamento de imagens
+                const img = pdfEl.querySelector('img');
+                if (img && !img.complete) {
+                    await new Promise(resolve => {
+                        img.onload = resolve;
+                        img.onerror = resolve;
+                        setTimeout(resolve, 1000);
+                    });
+                }
+
                 const canvas = await html2canvas(pdfEl, {
-                    scale: 2,
+                    scale: 3, // Alta qualidade
                     useCORS: true,
+                    allowTaint: true,
                     backgroundColor: '#ffffff',
                     logging: false,
-                    windowWidth: 1123
+                    width: 1123, // 297mm em pixels a 96dpi
+                    height: Math.ceil(pdfEl.scrollHeight),
+                    windowWidth: 1123,
+                    x: 0,
+                    y: 0,
+                    scrollX: 0,
+                    scrollY: 0
                 });
+
+                // Restaurar posição
+                pdfEl.style.left = originalLeft;
+                pdfEl.style.top = '0';
 
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('l', 'mm', 'a4');
                 
-                const imgData = canvas.toDataURL('image/png');
-                const imgWidth = 297;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
+                // Dimensões exatas da página A4 paisagem
+                const pageWidth = 297;
                 const pageHeight = 210;
-                let finalWidth = imgWidth;
-                let finalHeight = imgHeight;
-                let y = 0;
+                const margin = 5; // Margem de segurança
                 
-                if (imgHeight > pageHeight) {
-                    finalHeight = pageHeight;
-                    finalWidth = (canvas.width * finalHeight) / canvas.height;
-                } else {
-                    y = (pageHeight - imgHeight) / 2;
-                }
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
                 
-                const x = (297 - finalWidth) / 2;
-                pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight);
+                // Calcular escala para caber na página com margens
+                const scaleX = (pageWidth - margin * 2) / imgWidth;
+                const scaleY = (pageHeight - margin * 2) / imgHeight;
+                const scale = Math.min(scaleX, scaleY);
+                
+                const finalWidth = imgWidth * scale;
+                const finalHeight = imgHeight * scale;
+                
+                // Centralizar na página
+                const x = (pageWidth - finalWidth) / 2;
+                const y = (pageHeight - finalHeight) / 2;
+                
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                
+                pdf.addImage(imgData, 'PNG', x, y, finalWidth, finalHeight, undefined, 'FAST');
 
                 const fileName = `escala_sata_${monthNames[currentMonth].toLowerCase()}_${currentYear}.pdf`;
                 pdf.save(fileName);
                 
-                showToast('PDF baixado com sucesso!', 'success');
+                showToast('PDF gerado com sucesso!', 'success');
                 
             } catch (err) {
                 console.error('Erro:', err);
