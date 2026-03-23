@@ -2,123 +2,73 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SATA Security - Escala Profissional v3.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SATA Security - PDF ULTRA FIX</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
         
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-
-        :root {
-            --bg-primary: #0a0f1a;
-            --bg-card: #1a2332;
-            --text-primary: #f8fafc;
-            --sata-blue: #0066cc;
-            --sata-green: #c8db00;
-            --border-default: rgba(148, 163, 184, 0.2);
-            --work-bg: rgba(59, 130, 246, 0.2);
-            --off-bg: rgba(255, 255, 255, 0.05);
-            --vacation-bg: rgba(245, 158, 11, 0.2);
-        }
-
-        body { background: var(--bg-primary); color: var(--text-primary); padding: 15px; overflow-x: hidden; }
-
-        /* Header */
-        .app-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; padding: 15px 25px; background: var(--bg-card);
-            border-radius: 12px; border-bottom: 4px solid var(--sata-blue);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5); flex-wrap: wrap; gap: 15px;
-        }
-
-        .logo-box h1 { font-size: 1.6rem; font-weight: 800; color: var(--sata-blue); }
-        .logo-box span { color: var(--sata-green); }
-        .logo-box p { font-size: 9px; letter-spacing: 3px; opacity: 0.6; font-weight: 700; }
-
-        .controls { display: flex; gap: 10px; align-items: center; }
-        select, input { 
-            background: #111827; border: 1px solid var(--border-default); 
-            color: white; padding: 10px; border-radius: 6px; outline: none;
-        }
-
-        .btn { 
-            padding: 12px 20px; border-radius: 8px; cursor: pointer; 
-            font-weight: 800; border: none; background: var(--sata-blue); color: white;
-            transition: 0.2s; text-transform: uppercase; font-size: 12px;
-        }
-        .btn:hover { background: #004d99; transform: translateY(-2px); }
-
-        /* Tabela Mobile-Friendly */
-        .table-container { background: var(--bg-card); border-radius: 12px; overflow-x: auto; border: 1px solid var(--border-default); }
-        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
-        th, td { padding: 12px 4px; border: 1px solid var(--border-default); text-align: center; font-size: 12px; }
-        th { background: #111827; color: #94a3b8; font-weight: 700; }
+        body { font-family: 'Inter', sans-serif; background: #0a0f1a; color: white; padding: 20px; }
         
-        .name-cell { text-align: left; padding-left: 15px; width: 230px; font-weight: 600; position: sticky; left: 0; background: #1a2332; z-index: 5; }
-        .editable { cursor: pointer; font-weight: 700; min-width: 30px; transition: 0.1s; }
-        .editable:focus { background: #2d3748; outline: 2px solid var(--sata-blue); }
+        /* Interface */
+        .header { display: flex; justify-content: space-between; align-items: center; background: #1a2332; padding: 20px; border-radius: 10px; border-bottom: 4px solid #0066cc; margin-bottom: 20px; }
+        .btn { background: #0066cc; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        
+        .table-container { overflow-x: auto; background: #1a2332; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; min-width: 1200px; font-size: 12px; }
+        th, td { border: 1px solid #374151; padding: 8px 4px; text-align: center; }
+        th { background: #111827; color: #9ca3af; }
+        .name-cell { text-align: left; padding-left: 10px; width: 200px; font-weight: bold; position: sticky; left: 0; background: #1a2332; }
+        .d-work { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .total-cell { font-weight: bold; color: #c8db00; }
 
-        /* Cores de Status */
-        .d-work { color: #60a5fa; background: var(--work-bg); }
-        .d-vacation { color: #fbbf24; background: var(--vacation-bg); }
-        .total-cell { font-weight: 800; color: var(--sata-green); background: rgba(200, 219, 0, 0.05); }
-
-        /* TEMPLATE PDF (OCULTO) */
-        #pdf-export-layer {
-            position: absolute; left: -5000px; top: 0;
-            width: 1122px; /* 297mm fixo para A4 Paisagem */
-            background: white; color: black; padding: 15mm; box-sizing: border-box;
+        /* --- O SEGREDO PARA NÃO CORTAR --- */
+        #pdf-render-zone {
+            position: absolute;
+            left: -10000px; /* Escondido */
+            top: 0;
+            width: 1600px; /* Largura forçada para caber 31 dias + Nome sem esmagar */
+            background: white;
+            color: black;
         }
-        #pdf-export-layer table { width: 100%; border-collapse: collapse; border: 1px solid #000; }
-        #pdf-export-layer th, #pdf-export-layer td { border: 1px solid #000; padding: 4px 2px; font-size: 9pt; color: black; }
-        #pdf-export-layer th { background: #f0f0f0; }
-        .pdf-work { background: #e0f2fe !important; }
-        .pdf-vacation { background: #fef3c7 !important; }
-
-        #toast { 
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
-            background: #333; color: white; padding: 12px 25px; border-radius: 30px; 
-            display: none; z-index: 9999; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        #pdf-render-zone table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            table-layout: fixed; /* Força as colunas a respeitarem o tamanho */
+        }
+        #pdf-render-zone th, #pdf-render-zone td { 
+            border: 1pt solid black; 
+            font-size: 10pt; 
+            padding: 5px 2px;
+            word-wrap: break-word;
         }
     </style>
 </head>
 <body>
 
-    <div id="toast"></div>
-
-    <header class="app-header">
-        <div class="logo-box">
-            <h1>SATA <span>SECURITY</span></h1>
-            <p>ESCALA OPERACIONAL 2026</p>
+    <div class="header">
+        <div>
+            <h1 style="color: #0066cc; margin:0">SATA <span style="color: #c8db00">SECURITY</span></h1>
+            <p style="font-size: 10px; opacity: 0.6;">SISTEMA DE ESCALAS V4.0</p>
         </div>
-        <div class="controls">
-            <button onclick="changeMonth(-1)" class="btn" style="padding: 10px;">◀</button>
-            <select id="monthSelect" onchange="updateMonth()"></select>
-            <button onclick="changeMonth(1)" class="btn" style="padding: 10px;">▶</button>
-            <button class="btn" onclick="gerarPDF()">⬇ Baixar PDF Perfeito</button>
-        </div>
-    </header>
+        <button class="btn" onclick="gerarPDF()">Baixar PDF Sem Cortes</button>
+    </div>
 
     <div class="table-container">
         <table>
-            <thead id="head"></thead>
-            <tbody id="body"></tbody>
+            <thead id="h"></thead>
+            <tbody id="b"></tbody>
         </table>
     </div>
 
-    <div id="pdf-export-layer"></div>
+    <div id="pdf-render-zone"></div>
 
     <script>
         const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        let currentMonth = 2; // Março
-        let currentYear = 2026;
-
-        // SEUS 11 FUNCIONÁRIOS REAIS
-        const dadosIniciais = [
+        let fucionarios = [
             { nome: "Ana Daria F. Sarmento", turno: "D", dias: ["F","F","8","8","8","5","F","F","F","8","8","F","8","F","6","F","8","8","F","8","8","6","F","8","8","F","8","F","F","F","17"] },
             { nome: "Brenda M. Oliveira", turno: "C", dias: ["F","14","14","14","14","14","F","F","14","14","14","14","14","F","F","0","14","14","14","14","F","F","14","14","14","14","14","F","F","14","14"] },
             { nome: "Celoir A. Moraes", turno: "E", dias: ["8","12","20","F","20","F","F","F","12","F","12","8","F","12","8","12","F","12","F","8","12","8","12","F","12","F","8","12","8","F","8"] },
@@ -132,148 +82,58 @@
             { nome: "Fabricio J. Aguiar", turno: "G", dias: ["F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9"] }
         ];
 
-        let funcionarios = JSON.parse(localStorage.getItem('escala_sata_v3')) || dadosIniciais;
-
-        function init() {
-            const select = document.getElementById('monthSelect');
-            monthNames.forEach((m, i) => select.add(new Option(m, i)));
-            select.value = currentMonth;
-            render();
-        }
-
         function render() {
-            const days = new Date(currentYear, currentMonth + 1, 0).getDate();
-            localStorage.setItem('escala_sata_v3', JSON.stringify(funcionarios));
-
-            let h = `<tr><th class="name-cell">COLABORADOR</th><th style="width:35px">T</th>`;
-            for(let i=1; i<=days; i++) h += `<th>${i}</th>`;
+            let h = `<tr><th class="name-cell">NOME</th><th>T</th>`;
+            for(let i=1; i<=31; i++) h += `<th>${i}</th>`;
             h += `<th>TOT</th></tr>`;
-            document.getElementById('head').innerHTML = h;
+            document.getElementById('h').innerHTML = h;
 
             let b = "";
-            funcionarios.forEach((f, fIdx) => {
+            fucionarios.forEach((f, idx) => {
                 let tot = 0;
-                let cells = "";
-                for(let i=0; i<days; i++) {
-                    const val = f.dias[i] || "F";
-                    const n = parseInt(val);
-                    if(!isNaN(n) && n > 0 && n < 25) tot++;
-                    const cls = val === "FE" ? "d-vacation" : (n > 0 ? "d-work" : "");
-                    cells += `<td class="editable ${cls}" contenteditable="true" onblur="updateVal(${fIdx}, ${i}, this)">${val}</td>`;
-                }
-                b += `<tr>
-                    <td class="name-cell">${f.nome}</td>
-                    <td style="font-weight:800; color:var(--sata-blue-light)">${f.turno}</td>
-                    ${cells}
-                    <td class="total-cell" id="tot-${fIdx}">${tot}d</td>
-                </tr>`;
+                let cells = f.dias.map(d => {
+                    if(!isNaN(parseInt(d)) && parseInt(d) > 0) tot++;
+                    return `<td class="${!isNaN(parseInt(d)) ? 'd-work' : ''}">${d}</td>`;
+                }).join('');
+                b += `<tr><td class="name-cell">${f.nome}</td><td>${f.turno}</td>${cells}<td class="total-cell">${tot}d</td></tr>`;
             });
-            document.getElementById('body').innerHTML = b;
-        }
-
-        function updateVal(fIdx, dIdx, el) {
-            let v = el.innerText.trim().toUpperCase();
-            if(v === "" || v === "-") v = "F";
-            funcionarios[fIdx].dias[dIdx] = v;
-            
-            // Atualização de performance: muda cor e total sem rebuild
-            const n = parseInt(v);
-            el.className = `editable ${v === "FE" ? "d-vacation" : (n > 0 ? "d-work" : "")}`;
-            
-            let novoTot = 0;
-            funcionarios[fIdx].dias.forEach(d => { if(!isNaN(parseInt(d)) && parseInt(d)>0) novoTot++; });
-            document.getElementById(`tot-${fIdx}`).innerText = `${novoTot}d`;
-            
-            localStorage.setItem('escala_sata_v3', JSON.stringify(funcionarios));
-        }
-
-        function changeMonth(delta) {
-            currentMonth += delta;
-            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-            document.getElementById('monthSelect').value = currentMonth;
-            render();
-        }
-
-        function updateMonth() {
-            currentMonth = parseInt(document.getElementById('monthSelect').value);
-            render();
-        }
-
-        function showToast(m) {
-            const t = document.getElementById('toast');
-            t.innerText = m; t.style.display = "block";
-            setTimeout(() => t.style.display = "none", 3000);
+            document.getElementById('b').innerHTML = b;
         }
 
         async function gerarPDF() {
-            showToast("🚀 Processando PDF Perfeito...");
-            const layer = document.getElementById('pdf-export-layer');
-            const days = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const zone = document.getElementById('pdf-render-zone');
+            // Criar a tabela idêntica na zona branca
+            let html = `<div style="padding:20px"><h1 style="color:#0066cc">SATA SECURITY - ESCALA MARÇO 2026</h1><table>`;
+            html += document.getElementById('h').outerHTML;
+            html += document.getElementById('b').outerHTML;
+            html += `</table></div>`;
+            zone.innerHTML = html;
 
-            let html = `
-                <div style="width:100%; padding: 5px;">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom:3pt solid #0066cc; padding-bottom:10px; margin-bottom:15px">
-                        <div>
-                            <h1 style="font-size:32pt; margin:0; color:#0066cc">SATA SECURITY</h1>
-                            <p style="font-size:10pt; margin:0; color:#666; letter-spacing:2px">CONTROLE OPERACIONAL DE ESCALA</p>
-                        </div>
-                        <div style="text-align:right">
-                            <h2 style="font-size:18pt; margin:0">${monthNames[currentMonth].toUpperCase()} / ${currentYear}</h2>
-                        </div>
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="text-align:left; padding-left:10px; width:200px">NOME DO FUNCIONÁRIO</th>
-                                <th style="width:30px">T</th>`;
-            for(let i=1; i<=days; i++) html += `<th>${i}</th>`;
-            html += `<th style="width:45px">TOT</th></tr></thead><tbody>`;
-
-            funcionarios.forEach(f => {
-                let tot = 0;
-                html += `<tr><td style="text-align:left; padding-left:10px; font-weight:bold">${f.nome}</td><td style="font-weight:bold">${f.turno}</td>`;
-                f.dias.forEach(d => {
-                    const n = parseInt(d);
-                    if(!isNaN(n) && n > 0) tot++;
-                    const cls = d === "FE" ? "pdf-vacation" : (n > 0 ? "pdf-work" : "");
-                    html += `<td class="${cls}">${d}</td>`;
-                });
-                html += `<td style="font-weight:bold; background:#eee">${tot}d</td></tr>`;
+            // CONFIGURAÇÃO CRÍTICA DO CANVAS
+            const canvas = await html2canvas(zone, {
+                scale: 2,         // Alta qualidade
+                width: 1600,      // Força a largura total da tabela
+                windowWidth: 1600,// Simula um ecrã gigante para não cortar
+                logging: false,
+                backgroundColor: "#ffffff"
             });
 
-            html += `</tbody></table>
-                    <p style="margin-top:15px; font-size:8pt; text-align:center; color:#999">
-                        Documento Gerado via SATA System em ${new Date().toLocaleString()} - Página 1 de 1
-                    </p>
-                </div>`;
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            
+            // PDF em Paisagem (Landscape)
+            const pdf = new jsPDF('l', 'mm', 'a4');
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
 
-            layer.innerHTML = html;
-
-            try {
-                const canvas = await html2canvas(layer, { 
-                    scale: 2.5, // Resolução premium
-                    width: 1122, // Força largura de A4 Paisagem (pixels)
-                    windowWidth: 1122,
-                    useCORS: true 
-                });
-                
-                const imgData = canvas.toDataURL('image/png', 1.0);
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('l', 'mm', 'a4');
-                
-                pdf.addImage(imgData, 'PNG', 0, 0, 297, 210, undefined, 'FAST');
-                pdf.save(`ESCALA_SATA_${monthNames[currentMonth].toUpperCase()}.pdf`);
-                showToast("✅ PDF baixado com sucesso!");
-            } catch (e) {
-                console.error(e);
-                showToast("❌ Erro ao gerar PDF.");
-            } finally {
-                layer.innerHTML = "";
-            }
+            // Ajusta a imagem proporcionalmente à folha A4
+            pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
+            pdf.save("ESCALA_SATA_PERFEITA.pdf");
+            
+            zone.innerHTML = ""; // Limpa memória
         }
 
-        init();
+        render();
     </script>
 </body>
 </html>
