@@ -3,134 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SATA Security - PDF ULTRA FIX</title>
+    <title>SATA Security - Premium Dashboard Interativo</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        
-        body { font-family: 'Inter', sans-serif; background: #0a0f1a; color: white; padding: 20px; }
-        
-        /* Interface */
-        .header { display: flex; justify-content: space-between; align-items: center; background: #1a2332; padding: 20px; border-radius: 10px; border-bottom: 4px solid #0066cc; margin-bottom: 20px; }
-        .btn { background: #0066cc; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
-        
-        .table-container { overflow-x: auto; background: #1a2332; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; min-width: 1200px; font-size: 12px; }
-        th, td { border: 1px solid #374151; padding: 8px 4px; text-align: center; }
-        th { background: #111827; color: #9ca3af; }
-        .name-cell { text-align: left; padding-left: 10px; width: 200px; font-weight: bold; position: sticky; left: 0; background: #1a2332; }
-        .d-work { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-        .total-cell { font-weight: bold; color: #c8db00; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
 
-        /* --- O SEGREDO PARA NÃO CORTAR --- */
-        #pdf-render-zone {
-            position: absolute;
-            left: -10000px; /* Escondido */
-            top: 0;
-            width: 1600px; /* Largura forçada para caber 31 dias + Nome sem esmagar */
-            background: white;
-            color: black;
+        :root {
+            --primary: #0066cc;
+            --secondary: #c8db00;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --accent-blue: #38bdf8;
+            --accent-gold: #fbbf24;
+            --white: #ffffff;
         }
-        #pdf-render-zone table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            table-layout: fixed; /* Força as colunas a respeitarem o tamanho */
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text-main);
+            padding: 30px;
+            min-height: 100vh;
         }
-        #pdf-render-zone th, #pdf-render-zone td { 
-            border: 1pt solid black; 
-            font-size: 10pt; 
-            padding: 5px 2px;
-            word-wrap: break-word;
+
+        .dashboard { max-width: 1600px; margin: 0 auto; }
+
+        .app-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 30px; background: var(--card-bg); backdrop-filter: blur(12px);
+            border-radius: 24px; border: 1px solid var(--border); margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
+
+        .brand h1 { font-size: 2.2rem; font-weight: 800; color: var(--primary); }
+        .brand h1 span { color: var(--secondary); }
+        .brand p { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 4px; color: var(--text-dim); margin-top: 5px; }
+
+        .btn-pdf {
+            background: linear-gradient(135deg, #0066cc, #004da0);
+            color: white; border: none; padding: 16px 32px; border-radius: 16px;
+            font-weight: 800; cursor: pointer; transition: all 0.3s;
+            text-transform: uppercase; font-size: 13px;
+        }
+
+        .btn-pdf:hover { transform: scale(1.05); box-shadow: 0 12px 25px rgba(0, 102, 204, 0.6); }
+
+        .table-card { background: var(--card-bg); backdrop-filter: blur(12px); border-radius: 28px; overflow: hidden; border: 1px solid var(--border); }
+        .table-scroll { overflow-x: auto; }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1400px; }
+        th { background: rgba(15, 23, 42, 0.6); padding: 20px 10px; font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; border-bottom: 2px solid var(--border); }
+        
+        td { padding: 14px 8px; text-align: center; border-bottom: 1px solid var(--border); font-size: 0.85rem; transition: 0.2s; }
+
+        /* Célula Editável */
+        .editable { cursor: cell; outline: none; }
+        .editable:focus { background: rgba(255,255,255,0.1) !important; box-shadow: inset 0 0 0 2px var(--primary); }
+
+        .name-cell {
+            text-align: left; padding-left: 25px; font-weight: 700; width: 260px;
+            position: sticky; left: 0; background: #1e293b; z-index: 10;
+            border-right: 2px solid var(--border);
+        }
+
+        /* Cores de Status */
+        .cell-work { color: var(--accent-blue); font-weight: 800; background: rgba(56, 189, 248, 0.08); }
+        .cell-vacation { color: var(--accent-gold); font-weight: 800; background: rgba(251, 191, 36, 0.15); }
+        .cell-off { color: var(--white); font-weight: 900; }
+
+        .turno-badge { color: var(--accent-blue); font-weight: 900; background: rgba(56, 189, 248, 0.2); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; }
+        .total-badge { background: var(--secondary); color: #000; font-weight: 900; padding: 6px 12px; border-radius: 10px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div>
-            <h1 style="color: #0066cc; margin:0">SATA <span style="color: #c8db00">SECURITY</span></h1>
-            <p style="font-size: 10px; opacity: 0.6;">SISTEMA DE ESCALAS V4.0</p>
+    <div class="dashboard">
+        <header class="app-header">
+            <div class="brand">
+                <h1>SATA <span>SECURITY</span></h1>
+                <p>Dashboard Operacional • Março 2026</p>
+            </div>
+            <button class="btn-pdf" onclick="gerarPDFPremium()">Gerar Relatório A4</button>
+        </header>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table>
+                    <thead id="head"></thead>
+                    <tbody id="body"></tbody>
+                </table>
+            </div>
         </div>
-        <button class="btn" onclick="gerarPDF()">Baixar PDF Sem Cortes</button>
     </div>
-
-    <div class="table-container">
-        <table>
-            <thead id="h"></thead>
-            <tbody id="b"></tbody>
-        </table>
-    </div>
-
-    <div id="pdf-render-zone"></div>
 
     <script>
-        const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-        let fucionarios = [
-            { nome: "Ana Daria F. Sarmento", turno: "D", dias: ["F","F","8","8","8","5","F","F","F","8","8","F","8","F","6","F","8","8","F","8","8","6","F","8","8","F","8","F","F","F","17"] },
-            { nome: "Brenda M. Oliveira", turno: "C", dias: ["F","14","14","14","14","14","F","F","14","14","14","14","14","F","F","0","14","14","14","14","F","F","14","14","14","14","14","F","F","14","14"] },
-            { nome: "Celoir A. Moraes", turno: "E", dias: ["8","12","20","F","20","F","F","F","12","F","12","8","F","12","8","12","F","12","F","8","12","8","12","F","12","F","8","12","8","F","8"] },
-            { nome: "Clenilton F. Carvalho", turno: "A", dias: ["F","5","6","5","F","F","12","8","5","F","5","F","F","5","F","5","6","5","F","F","5","F","5","6","5","F","F","5","8","F","8"] },
-            { nome: "Caio V. Sena", turno: "F", dias: ["F","21","20","21","20","20","F","20","21","20","21","20","F","20","20","21","20","21","20","F","20","20","21","20","21","20","F","20","F","F","F"] },
-            { nome: "Elizara Flores", turno: "E", dias: ["F","12","F","12","F","8","12","8","12","F","12","F","8","12","8","12","F","12","8","8","12","F","12","F","12","8","8","12","F","8","F"] },
-            { nome: "Jailson M. Moraes", turno: "A", dias: ["F","5","6","5","F","F","5","F","5","6","5","F","8","5","F","5","6","5","F","F","5","F","5","6","5","F","F","5","F","8","F"] },
-            { nome: "Mayara C. Jesus", turno: "F", dias: ["20","F","F","12","8","20","20","F","21","20","21","20","20","F","20","21","20","21","20","20","F","F","21","20","21","20","20","F","21","F","F"] },
-            { nome: "Rogerio P. Pinheiro", turno: "D", dias: ["20","21","F","21","F","F","20","20","F","6","8","F","F","20","F","6","F","8","F","F","20","20","6","F","8","F","F","20","21","F","F"] },
-            { nome: "Fernando S. Lapa", turno: "B", dias: ["F","15","15","15","15","15","F","F","FE","FE","15","15","15","15","F","F","15","FE","15","15","15","F","F","15","15","15","15","15","F","F","15"] },
-            { nome: "Fabricio J. Aguiar", turno: "G", dias: ["F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9"] }
+        const dadosIniciais = [
+            { n: "Ana Daria F. Sarmento", t: "D", d: ["F","F","8","8","8","5","F","F","F","8","8","F","8","F","6","F","8","8","F","8","8","6","F","8","8","F","8","F","F","F","17"] },
+            { n: "Brenda M. Oliveira", t: "C", d: ["F","14","14","14","14","14","F","F","14","14","14","14","14","F","F","0","14","14","14","14","F","F","14","14","14","14","14","F","F","14","14"] },
+            { n: "Celoir A. Moraes", t: "E", d: ["8","12","20","F","20","F","F","F","12","F","12","8","F","12","8","12","F","12","F","8","12","8","12","F","12","F","8","12","8","F","8"] },
+            { n: "Clenilton F. Carvalho", t: "A", d: ["F","5","6","5","F","F","12","8","5","F","5","F","F","5","F","5","6","5","F","F","5","F","5","6","5","F","F","5","8","F","8"] },
+            { n: "Caio V. Sena", t: "F", d: ["F","21","20","21","20","20","F","20","21","20","21","20","F","20","20","21","20","21","20","F","20","20","21","20","21","20","F","20","F","F","F"] },
+            { n: "Elizara Flores", t: "E", d: ["F","12","F","12","F","8","12","8","12","F","12","F","8","12","8","12","F","12","8","8","12","F","12","F","12","8","8","12","F","8","F"] },
+            { n: "Jailson M. Moraes", t: "A", d: ["F","5","6","5","F","F","5","F","5","6","5","F","8","5","F","5","6","5","F","F","5","F","5","6","5","F","F","5","F","8","F"] },
+            { n: "Mayara C. Jesus", t: "F", d: ["20","F","F","12","8","20","20","F","21","20","21","20","20","F","20","21","20","21","20","20","F","F","21","20","21","20","20","F","21","F","F"] },
+            { n: "Rogerio P. Pinheiro", t: "D", d: ["20","21","F","21","F","F","20","20","F","6","8","F","F","20","F","6","F","8","F","F","20","20","6","F","8","F","F","20","21","F","F"] },
+            { n: "Fernando S. Lapa", t: "B", d: ["F","15","15","15","15","15","F","F","FE","FE","15","15","15","15","F","F","15","FE","15","15","15","F","F","15","15","15","15","15","F","F","15"] },
+            { n: "Fabricio J. Aguiar", t: "G", d: ["F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9","9","9","9","F","F","9","9"] }
         ];
 
+        // Carrega dados salvos ou usa os iniciais
+        let funcionarios = JSON.parse(localStorage.getItem('escala_sata_v5')) || dadosIniciais;
+
         function render() {
-            let h = `<tr><th class="name-cell">NOME</th><th>T</th>`;
+            localStorage.setItem('escala_sata_v5', JSON.stringify(funcionarios));
+            
+            let h = `<tr><th class="name-cell">Colaborador</th><th>Turno</th>`;
             for(let i=1; i<=31; i++) h += `<th>${i}</th>`;
-            h += `<th>TOT</th></tr>`;
-            document.getElementById('h').innerHTML = h;
+            h += `<th>Total</th></tr>`;
+            document.getElementById('head').innerHTML = h;
 
             let b = "";
-            fucionarios.forEach((f, idx) => {
+            funcionarios.forEach((f, fIdx) => {
                 let tot = 0;
-                let cells = f.dias.map(d => {
-                    if(!isNaN(parseInt(d)) && parseInt(d) > 0) tot++;
-                    return `<td class="${!isNaN(parseInt(d)) ? 'd-work' : ''}">${d}</td>`;
+                let cells = f.d.map((d, dIdx) => {
+                    const n = parseInt(d);
+                    const isWork = !isNaN(n) && n > 0;
+                    if(isWork) tot++;
+                    let cls = (d === "FE") ? "cell-vacation" : (isWork ? "cell-work" : "cell-off");
+                    return `<td contenteditable="true" 
+                                class="editable ${cls}" 
+                                onblur="atualizarEscala(${fIdx}, ${dIdx}, this)">${d}</td>`;
                 }).join('');
-                b += `<tr><td class="name-cell">${f.nome}</td><td>${f.turno}</td>${cells}<td class="total-cell">${tot}d</td></tr>`;
+                
+                b += `<tr>
+                    <td class="name-cell">${f.n}</td>
+                    <td><span class="turno-badge">${f.t}</span></td>
+                    ${cells}
+                    <td><span class="total-badge" id="tot-${fIdx}">${tot}d</span></td>
+                </tr>`;
             });
-            document.getElementById('b').innerHTML = b;
+            document.getElementById('body').innerHTML = b;
         }
 
-        async function gerarPDF() {
-            const zone = document.getElementById('pdf-render-zone');
-            // Criar a tabela idêntica na zona branca
-            let html = `<div style="padding:20px"><h1 style="color:#0066cc">SATA SECURITY - ESCALA MARÇO 2026</h1><table>`;
-            html += document.getElementById('h').outerHTML;
-            html += document.getElementById('b').outerHTML;
-            html += `</table></div>`;
-            zone.innerHTML = html;
+        function atualizarEscala(fIdx, dIdx, el) {
+            let novoValor = el.innerText.trim().toUpperCase() || "F";
+            funcionarios[fIdx].d[dIdx] = novoValor;
+            
+            // Recalcula visual e total sem dar refresh em tudo
+            const n = parseInt(novoValor);
+            const isWork = !isNaN(n) && n > 0;
+            el.className = `editable ${novoValor === "FE" ? "cell-vacation" : (isWork ? "cell-work" : "cell-off")}`;
+            el.innerText = novoValor;
 
-            // CONFIGURAÇÃO CRÍTICA DO CANVAS
-            const canvas = await html2canvas(zone, {
-                scale: 2,         // Alta qualidade
-                width: 1600,      // Força a largura total da tabela
-                windowWidth: 1600,// Simula um ecrã gigante para não cortar
-                logging: false,
-                backgroundColor: "#ffffff"
+            let novoTot = 0;
+            funcionarios[fIdx].d.forEach(val => { if(!isNaN(parseInt(val)) && parseInt(val) > 0) novoTot++; });
+            document.getElementById(`tot-${fIdx}`).innerText = novoTot + "d";
+
+            localStorage.setItem('escala_sata_v5', JSON.stringify(funcionarios));
+        }
+
+        function gerarPDFPremium() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('l', 'mm', 'a4');
+            
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(0, 102, 204);
+            pdf.setFontSize(22);
+            pdf.text("SATA", 14, 18);
+            pdf.setTextColor(200, 219, 0);
+            pdf.text("SECURITY", 38, 18);
+            
+            const columns = ['FUNCIONÁRIO', 'T', ...Array.from({length: 31}, (_, i) => i + 1), 'TOT'];
+            const rows = funcionarios.map(f => {
+                let tot = f.d.filter(d => !isNaN(parseInt(d)) && parseInt(d) > 0).length;
+                return [f.n, f.t, ...f.d, tot + 'd'];
             });
 
-            const imgData = canvas.toDataURL('image/png');
-            const { jsPDF } = window.jspdf;
-            
-            // PDF em Paisagem (Landscape)
-            const pdf = new jsPDF('l', 'mm', 'a4');
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-
-            // Ajusta a imagem proporcionalmente à folha A4
-            pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, pageHeight);
-            pdf.save("ESCALA_SATA_PERFEITA.pdf");
-            
-            zone.innerHTML = ""; // Limpa memória
+            pdf.autoTable({
+                head: [columns],
+                body: rows,
+                startY: 30,
+                theme: 'grid',
+                styles: { fontSize: 6.5, cellPadding: 1.5, halign: 'center' },
+                headStyles: { fillColor: [0, 102, 204], textColor: 255 },
+                columnStyles: { 0: { halign: 'left', cellWidth: 38, fontStyle: 'bold' }, 33: { fillColor: [200, 219, 0], fontStyle: 'bold' } },
+                didParseCell: function(data) {
+                    if (data.section === 'body' && data.column.index > 1 && data.column.index < 33) {
+                        const val = data.cell.raw;
+                        if (val === "FE") { data.cell.styles.fillColor = [251, 243, 219]; data.cell.styles.textColor = [180, 120, 0]; }
+                        else if (!isNaN(parseInt(val)) && parseInt(val) > 0) { data.cell.styles.fillColor = [235, 245, 255]; data.cell.styles.textColor = [0, 102, 204]; }
+                        else if (val === "F") { data.cell.styles.textColor = [150, 150, 150]; }
+                    }
+                }
+            });
+            pdf.save("ESCALA_SATA_MARCO_2026.pdf");
         }
 
         render();
