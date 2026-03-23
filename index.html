@@ -223,6 +223,211 @@
             box-shadow: 0 6px 28px rgba(21,101,192,0.6);
         }
 
+        .btn-pdf svg { width: 16px; height: 16px; fill: white; }
+
+        /* ─── ADD ROW BAR ─── */
+        .add-row-bar {
+            display: flex;
+            justify-content: center;
+            padding: 14px 0 4px;
+        }
+
+        .btn-add {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: 1.5px dashed var(--border2);
+            color: var(--lime);
+            padding: 10px 28px;
+            border-radius: 8px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .2s;
+            width: 100%;
+            max-width: 340px;
+            justify-content: center;
+        }
+        .btn-add:hover, .btn-add:active {
+            background: rgba(198,212,0,0.07);
+            border-color: var(--lime);
+            box-shadow: 0 0 16px rgba(198,212,0,0.12);
+        }
+        .btn-add svg { width: 18px; height: 18px; fill: var(--lime); }
+
+        /* ─── DELETE ICON ON ROW ─── */
+        .row-delete-btn {
+            position: absolute;
+            left: -38px;
+            top: 50%;
+            transform: translateY(-50%) scale(0.7);
+            width: 32px; height: 32px;
+            background: #c62828;
+            border: none;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all .25s cubic-bezier(.34,1.56,.64,1);
+            z-index: 20;
+            box-shadow: 0 2px 10px rgba(198,40,40,0.5);
+        }
+        .row-delete-btn svg { width: 16px; height: 16px; fill: white; }
+        .row-delete-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(-50%) scale(1);
+        }
+
+        #t-body tr { position: relative; }
+
+        /* row highlight when delete visible */
+        #t-body tr.pending-delete .name-cell { border-right-color: #c62828; }
+        #t-body tr.pending-delete { background: rgba(198,40,40,0.04); }
+
+        /* ─── MODAL OVERLAY ─── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: #0d1623;
+            border: 1px solid var(--border2);
+            border-radius: 16px;
+            padding: 32px 28px 24px;
+            width: 100%;
+            max-width: 380px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            animation: modalIn .25s cubic-bezier(.34,1.56,.64,1);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.8);
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+
+        .modal-icon {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 4px;
+        }
+        .modal-icon.danger  { background: rgba(198,40,40,0.18); }
+        .modal-icon.success { background: rgba(198,212,0,0.14); }
+        .modal-icon.danger  svg { width: 28px; height: 28px; fill: #ef5350; }
+        .modal-icon.success svg { width: 28px; height: 28px; fill: var(--lime); }
+
+        .modal-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--white);
+            text-align: center;
+        }
+
+        .modal-desc {
+            font-size: 13px;
+            color: var(--text-dim);
+            text-align: center;
+            line-height: 1.6;
+        }
+        .modal-desc strong { color: var(--white); }
+
+        .modal-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .form-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .form-input {
+            background: rgba(255,255,255,0.05);
+            border: 1.5px solid var(--border2);
+            border-radius: 8px;
+            color: var(--white);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 10px 14px;
+            width: 100%;
+            outline: none;
+            transition: border-color .15s;
+            text-transform: uppercase;
+        }
+        .form-input:focus { border-color: var(--lime); }
+        .form-input::placeholder { color: var(--muted); text-transform: none; font-weight: 400; font-family: 'Barlow', sans-serif; }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-modal-cancel {
+            flex: 1;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border2);
+            color: var(--text-dim);
+            padding: 11px;
+            border-radius: 8px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .btn-modal-cancel:hover { background: rgba(255,255,255,0.1); }
+
+        .btn-modal-confirm {
+            flex: 1.4;
+            border: none;
+            padding: 11px;
+            border-radius: 8px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .btn-modal-confirm.danger  { background: #c62828; color: white; }
+        .btn-modal-confirm.danger:hover  { background: #e53935; }
+        .btn-modal-confirm.success { background: var(--lime); color: #0a1200; }
+        .btn-modal-confirm.success:hover { background: #d4e500; }
+
         /* ─── RESPONSIVE / MOBILE ─── */
         @media (max-width: 768px) {
 
@@ -611,6 +816,49 @@
         </table>
     </div>
 
+    <!-- ADD BUTTON -->
+    <div class="add-row-bar">
+        <button class="btn-add" onclick="openAddModal()">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Adicionar Funcionário
+        </button>
+    </div>
+
+</div>
+
+<!-- MODAL REMOVER -->
+<div class="modal-overlay" id="modal-remove" onclick="closeRemoveModal(event)">
+    <div class="modal-box" id="modal-remove-box">
+        <div class="modal-icon danger">
+            <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </div>
+        <h2 class="modal-title">Remover Funcionário</h2>
+        <p class="modal-desc" id="modal-remove-name">Tem certeza que deseja remover <strong></strong> da escala?</p>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" onclick="closeRemoveModal()">Cancelar</button>
+            <button class="btn-modal-confirm danger" id="btn-confirm-remove" onclick="confirmRemove()">Remover</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL ADICIONAR -->
+<div class="modal-overlay" id="modal-add" onclick="closeAddModal(event)">
+    <div class="modal-box" id="modal-add-box">
+        <div class="modal-icon success">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        </div>
+        <h2 class="modal-title">Novo Funcionário</h2>
+        <div class="modal-form">
+            <label class="form-label">Nome completo</label>
+            <input type="text" id="add-nome" class="form-input" placeholder="Ex: JOÃO DA SILVA" autocomplete="off" />
+            <label class="form-label">Turno</label>
+            <input type="text" id="add-turno" class="form-input turno-input" placeholder="Ex: A" maxlength="2" autocomplete="off" />
+        </div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" onclick="closeAddModal()">Cancelar</button>
+            <button class="btn-modal-confirm success" onclick="confirmAdd()">Adicionar</button>
+        </div>
+    </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -724,7 +972,7 @@
 
             if (temFerias) statFerias++;
 
-            b += `<tr>
+            b += `<tr data-fidx="${fIdx}">
                 <td class="name-cell edit" contenteditable="true" onblur="updateNome(${fIdx},this)">${f.n}</td>
                 <td class="turno-cell edit" contenteditable="true" onblur="updateTurno(${fIdx},this)">${f.t}</td>
                 ${diasHTML}
@@ -733,6 +981,7 @@
         });
 
         document.getElementById('t-body').innerHTML = b;
+        attachRowLongPress();
 
         // Stats
         document.getElementById('stat-func').innerText = funcionarios.length;
@@ -742,6 +991,136 @@
 
         localStorage.setItem('sata_v12', JSON.stringify(funcionarios));
     }
+
+    /* ─── LONG-PRESS / HOLD TO DELETE ─── */
+    let activeDeleteBtn = null;
+
+    function attachRowLongPress() {
+        const rows = document.querySelectorAll('#t-body tr');
+        rows.forEach(function(row) {
+            // Inject delete button into the name-cell
+            const delBtn = document.createElement('button');
+            delBtn.className = 'row-delete-btn';
+            delBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+            delBtn.title = 'Remover funcionário';
+            row.querySelector('.name-cell').appendChild(delBtn);
+
+            delBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                const fIdx = parseInt(row.dataset.fidx);
+                openRemoveModal(fIdx);
+            });
+
+            // Long-press: 500ms hold
+            let lpTimer = null;
+            function startHold(e) {
+                if (e.target.classList.contains('day-cell')) return;
+                if (e.target.classList.contains('turno-cell')) return;
+                if (e.target.classList.contains('tot-cell')) return;
+                if (e.target.classList.contains('row-delete-btn') || e.target.closest('.row-delete-btn')) return;
+                if (lpTimer) clearTimeout(lpTimer);
+                lpTimer = setTimeout(function() {
+                    showDeleteBtn(row, delBtn);
+                }, 500);
+            }
+            function clearHold() {
+                if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
+            }
+
+            row.addEventListener('touchstart', startHold, {passive: true});
+            row.addEventListener('touchend', clearHold, {passive: true});
+            row.addEventListener('touchmove', clearHold, {passive: true});
+            row.addEventListener('mousedown', startHold);
+            row.addEventListener('mouseup', clearHold);
+            row.addEventListener('mouseleave', clearHold);
+        });
+    }
+
+    function showDeleteBtn(row, btn) {
+        hideAllDeleteBtns();
+        btn.classList.add('visible');
+        row.classList.add('pending-delete');
+        activeDeleteBtn = { row, btn };
+    }
+
+    function hideAllDeleteBtns(e) {
+        if (e && e.target && e.target.classList.contains('row-delete-btn')) return;
+        document.querySelectorAll('.row-delete-btn.visible').forEach(function(b) {
+            b.classList.remove('visible');
+        });
+        document.querySelectorAll('#t-body tr.pending-delete').forEach(function(r) {
+            r.classList.remove('pending-delete');
+        });
+        activeDeleteBtn = null;
+    }
+
+    /* ─── MODAL REMOVER ─── */
+    let removePendingIdx = -1;
+
+    function openRemoveModal(fIdx) {
+        removePendingIdx = fIdx;
+        const nome = funcionarios[fIdx] ? funcionarios[fIdx].n : '?';
+        document.querySelector('#modal-remove-name strong').innerText = nome;
+        document.querySelector('#modal-remove-name').innerHTML =
+            `Tem certeza que deseja remover <strong>${nome}</strong> da escala?`;
+        document.getElementById('modal-remove').classList.add('open');
+    }
+
+    function closeRemoveModal(e) {
+        if (e && e.currentTarget && e.target !== e.currentTarget) return;
+        document.getElementById('modal-remove').classList.remove('open');
+        removePendingIdx = -1;
+    }
+
+    function confirmRemove() {
+        if (removePendingIdx < 0 || removePendingIdx >= funcionarios.length) return;
+        const nome = funcionarios[removePendingIdx].n;
+        funcionarios.splice(removePendingIdx, 1);
+        document.getElementById('modal-remove').classList.remove('open');
+        removePendingIdx = -1;
+        render();
+        showToast('Funcionário removido');
+    }
+
+    /* ─── MODAL ADICIONAR ─── */
+    function openAddModal() {
+        document.getElementById('add-nome').value = '';
+        document.getElementById('add-turno').value = '';
+        document.getElementById('modal-add').classList.add('open');
+        setTimeout(function() { document.getElementById('add-nome').focus(); }, 100);
+    }
+
+    function closeAddModal(e) {
+        if (e && e.currentTarget && e.target !== e.currentTarget) return;
+        document.getElementById('modal-add').classList.remove('open');
+    }
+
+    function confirmAdd() {
+        const nome = document.getElementById('add-nome').value.trim().toUpperCase();
+        const turno = document.getElementById('add-turno').value.trim().toUpperCase();
+        if (!nome) {
+            document.getElementById('add-nome').focus();
+            document.getElementById('add-nome').style.borderColor = '#ef5350';
+            setTimeout(function() { document.getElementById('add-nome').style.borderColor = ''; }, 1200);
+            return;
+        }
+        funcionarios.push({ n: nome, t: turno || '—', d: {} });
+        document.getElementById('modal-add').classList.remove('open');
+        render();
+        showToast('Funcionário adicionado');
+    }
+
+    // Enter key on add form
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.getElementById('modal-remove').classList.remove('open');
+            document.getElementById('modal-add').classList.remove('open');
+        }
+        if (e.key === 'Enter' && document.getElementById('modal-add').classList.contains('open')) {
+            confirmAdd();
+        }
+    });
 
     /* ─── DETECTA MOBILE ─── */
     const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
@@ -1129,6 +1508,14 @@
 
 
     render();
+
+    // Global: tap anywhere outside a delete button hides it
+    document.addEventListener('touchstart', function(e) {
+        if (!e.target.closest('.row-delete-btn')) hideAllDeleteBtns();
+    }, {passive: true});
+    document.addEventListener('mousedown', function(e) {
+        if (!e.target.closest('.row-delete-btn')) hideAllDeleteBtns();
+    });
 </script>
 </body>
 </html>
