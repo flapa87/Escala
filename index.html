@@ -263,38 +263,31 @@
         /* O botão fica dentro da name-cell, alinhado à direita */
         .row-delete-btn {
             position: absolute;
-            right: 6px;
+            right: 8px;
             top: 50%;
-            transform: translateY(-50%) scale(0.6);
-            width: 26px; height: 26px;
-            background: transparent;
-            border: 1.5px solid transparent;
+            transform: translateY(-50%);
+            width: 28px; height: 28px;
+            background: rgba(198,40,40,0.2);
+            border: 1.5px solid rgba(239,83,80,0.5);
             border-radius: 6px;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .15s ease, transform .2s cubic-bezier(.34,1.56,.64,1),
-                        background .15s, border-color .15s;
-            z-index: 20;
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            transition: all .15s ease;
+            z-index: 100;
             flex-shrink: 0;
         }
         .row-delete-btn svg { width: 14px; height: 14px; fill: #ef5350; transition: fill .15s, transform .15s; }
 
-        /* Desktop: aparece quando o cursor passa sobre a CÉLULA DO NOME */
+        /* Desktop: hover direto no botão: destaque vermelho */
         @media (hover: hover) and (pointer: fine) {
-            /* hover na name-cell mostra o botão */
-            #t-body tr .name-cell:hover .row-delete-btn {
-                opacity: 0.55;
-                pointer-events: auto;
-                transform: translateY(-50%) scale(0.9);
-            }
-            /* hover direto no botão: destaque vermelho */
             .row-delete-btn:hover {
                 opacity: 1 !important;
                 transform: translateY(-50%) scale(1) !important;
-                background: rgba(198,40,40,0.14);
-                border-color: rgba(239,83,80,0.45);
+                background: rgba(198,40,40,0.25);
+                border-color: rgba(239,83,80,0.8);
             }
             .row-delete-btn:hover svg {
                 fill: #ff5252;
@@ -701,7 +694,7 @@
 
         .name-cell {
             text-align: left;
-            padding: 0 16px;
+            padding: 0 40px 0 16px;
             width: 270px;
             min-width: 270px;
             position: sticky;
@@ -1018,7 +1011,12 @@
             if (temFerias) statFerias++;
 
             b += `<tr data-fidx="${fIdx}">
-                <td class="name-cell edit" contenteditable="true" onblur="updateNome(${fIdx},this)">${f.n}</td>
+                <td class="name-cell edit">
+                    <span contenteditable="true" onblur="updateNome(${fIdx},this)">${f.n}</span>
+                    <button class="row-delete-btn" onclick="openRemoveModal(${fIdx})" title="Remover funcionário">
+                        <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    </button>
+                </td>
                 <td class="turno-cell edit" contenteditable="true" onblur="updateTurno(${fIdx},this)">${f.t}</td>
                 ${diasHTML}
                 <td class="tot-cell">${tot}</td>
@@ -1026,7 +1024,6 @@
         });
 
         document.getElementById('t-body').innerHTML = b;
-        attachRowLongPress();
 
         // Stats
         document.getElementById('stat-func').innerText = funcionarios.length;
@@ -1037,78 +1034,26 @@
         localStorage.setItem('sata_v12', JSON.stringify(funcionarios));
     }
 
-    /* ─── LONG-PRESS / HOLD TO DELETE ─── */
-    let activeDeleteBtn = null;
-
-    function attachRowLongPress() {
-        const rows = document.querySelectorAll('#t-body tr');
-        rows.forEach(function(row) {
-            // Inject delete button into the name-cell
-            const delBtn = document.createElement('button');
-            delBtn.className = 'row-delete-btn';
-            delBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
-            delBtn.title = 'Remover funcionário';
-            row.querySelector('.name-cell').appendChild(delBtn);
-
-            delBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                e.preventDefault();
-                const fIdx = parseInt(row.dataset.fidx);
-                openRemoveModal(fIdx);
-            });
-
-            // Long-press: 500ms hold
-            let lpTimer = null;
-            function startHold(e) {
-                if (e.target.classList.contains('day-cell')) return;
-                if (e.target.classList.contains('turno-cell')) return;
-                if (e.target.classList.contains('tot-cell')) return;
-                if (e.target.classList.contains('row-delete-btn') || e.target.closest('.row-delete-btn')) return;
-                if (lpTimer) clearTimeout(lpTimer);
-                lpTimer = setTimeout(function() {
-                    showDeleteBtn(row, delBtn);
-                }, 500);
-            }
-            function clearHold() {
-                if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
-            }
-
-            row.addEventListener('touchstart', startHold, {passive: true});
-            row.addEventListener('touchend', clearHold, {passive: true});
-            row.addEventListener('touchmove', clearHold, {passive: true});
-            row.addEventListener('mousedown', startHold);
-            row.addEventListener('mouseup', clearHold);
-            row.addEventListener('mouseleave', clearHold);
-        });
-    }
-
-    function showDeleteBtn(row, btn) {
-        hideAllDeleteBtns();
-        btn.classList.add('visible');
-        row.classList.add('pending-delete');
-        activeDeleteBtn = { row, btn };
-    }
-
+    /* ─── DELETE LOGIC ─── */
     function hideAllDeleteBtns(e) {
-        if (e && e.target && e.target.classList.contains('row-delete-btn')) return;
-        document.querySelectorAll('.row-delete-btn.visible').forEach(function(b) {
-            b.classList.remove('visible');
-        });
-        document.querySelectorAll('#t-body tr.pending-delete').forEach(function(r) {
-            r.classList.remove('pending-delete');
-        });
-        activeDeleteBtn = null;
+        // Mantido para compatibilidade se necessário
     }
 
     /* ─── MODAL REMOVER ─── */
     let removePendingIdx = -1;
 
     function openRemoveModal(fIdx) {
+        // Previne que o clique selecione o texto do nome
+        if (window.event) {
+            window.event.stopPropagation();
+        }
+        
         removePendingIdx = fIdx;
-        const nome = funcionarios[fIdx] ? funcionarios[fIdx].n : '?';
-        document.querySelector('#modal-remove-name strong').innerText = nome;
-        document.querySelector('#modal-remove-name').innerHTML =
-            `Tem certeza que deseja remover <strong>${nome}</strong> da escala?`;
+        const f = funcionarios[fIdx];
+        if (!f) return;
+        
+        const modalDesc = document.getElementById('modal-remove-name');
+        modalDesc.innerHTML = `Tem certeza que deseja remover <strong>${f.n}</strong> da escala?`;
         document.getElementById('modal-remove').classList.add('open');
     }
 
@@ -1120,12 +1065,19 @@
 
     function confirmRemove() {
         if (removePendingIdx < 0 || removePendingIdx >= funcionarios.length) return;
-        const nome = funcionarios[removePendingIdx].n;
+        
+        // Remove o funcionário do array
         funcionarios.splice(removePendingIdx, 1);
+        
+        // Fecha o modal
         document.getElementById('modal-remove').classList.remove('open');
         removePendingIdx = -1;
+        
+        // Salva no localStorage e re-renderiza
+        localStorage.setItem('sata_v12', JSON.stringify(funcionarios));
         render();
-        showToast('Funcionário removido');
+        
+        showToast('Funcionário removido com sucesso');
     }
 
     /* ─── MODAL ADICIONAR ─── */
